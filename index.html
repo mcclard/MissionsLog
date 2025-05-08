@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davos Heavy Industries - Classified Mission Data Core</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Base styles and Cassette Futurism theme */
+        :root {
+            --background: #0a0a0a;
+            --terminal: #001100;
+            --accent1: #00ff41; /* Green terminal text */
+            --accent2: #ff0055; /* Magenta warning */
+            --accent3: #00ccff; /* Cyan highlights */
+            --darkAccent: #004400;
+            --gridLines: #004400;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: var(--background);
+            color: var(--accent1);
+            line-height: 1.6;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Grid background */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--gridLines) 1px, transparent 1px),
+                linear-gradient(90deg, var(--gridLines) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            opacity: 0.5;
+        }
+        
+        /* Header */
+        header {
+            padding: 16px;
+            border-bottom: 1px solid var(--darkAccent);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header-title {
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.5em;
+            letter-spacing: 1px;
+        }
+        
+        .header-title i {
+            margin-right: 10px;
+        }
+        
+        .security-indicator {
+            display: flex;
+            align-items: center;
+        }
+        
+        .security-indicator i {
+            margin-right: 10px;
+        }
+        
+        /* Main content container */
+        .container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            border-right: 1px solid var(--darkAccent);
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--darkAccent);
+        }
+        
+        /* Login form */
+        .login-form {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        
+        .login-form h3 {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.8em;
+            margin-bottom: 4px;
+        }
+        
+        .form-group input {
+            width: 100%;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            color: var(--accent1);
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .login-error {
+            color: var(--accent2);
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+        
+        button {
+            background-color: transparent;
+            border: 1px solid var(--accent1);
+            color: var(--accent1);
+            padding: 8px 12px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        button i {
+            margin-right: 6px;
+        }
+        
+        button.logout-btn {
+            border-color: var(--accent2);
+            color: var(--accent2);
+        }
+        
+        /* Log entries */
+        .log-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        .log-entry:hover {
+            background-color: rgba(0, 68, 0, 0.3);
+        }
+        
+        .log-entry.selected {
+            background-color: rgba(0, 68, 0, 0.5);
+        }
+        
+        .log-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+            font-size: 0.8em;
+        }
+        
+        .log-date {
+            opacity: 0.8;
+        }
+        
+        .log-visibility {
+            display: flex;
+            align-items: center;
+        }
+        
+        .log-visibility.public {
+            color: var(--accent3);
+        }
+        
+        .log-visibility.private {
+            color: var(--accent2);
+        }
+        
+        .log-visibility i {
+            margin-right: 4px;
+            font-size: 0.8em;
+        }
+        
+        .log-title {
+            font-size: 0.9em;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .log-preview {
+            font-size: 0.8em;
+            opacity: 0.7;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Main content area */
+        .main-content {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .content-container {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--darkAccent);
+            border-radius: 4px;
+            padding: 24px;
+            margin-bottom: 16px;
+        }
+        
+        .log-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--darkAccent);
+        }
+        
+        .log-detail-title {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        .log-detail-meta {
+            display: flex;
+            align-items: center;
+        }
+        
+        .log-detail-date {
+            margin-right: 16px;
+        }
+        
+        .log-content {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            white-space: pre-line;
+        }
+        
+        .log-image {
+            margin-top: 16px;
+            border: 1px solid var(--darkAccent);
+            padding: 8px;
+            border-radius: 4px;
+        }
+        
+        .image-placeholder {
+            height: 200px;
+            background-color: var(--background);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .image-placeholder-caption {
+            margin-top: 8px;
+            font-size: 0.8em;
+        }
+        
+        .welcome-message {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        
+        .welcome-icon {
+            font-size: 3em;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .welcome-title {
+            font-size: 1.5em;
+            margin-bottom: 8px;
+        }
+        
+        .welcome-text {
+            max-width: 500px;
+            opacity: 0.7;
+        }
+        
+        .security-warning {
+            margin-top: 24px;
+            padding: 16px;
+            border: 1px solid var(--accent2);
+            color: var(--accent2);
+            border-radius: 4px;
+        }
+        
+        /* Footer */
+        .footer {
+            padding: 8px 16px;
+            font-size: 0.8em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .system-status {
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--accent1);
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+        
+        .user-status {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-status i {
+            margin-right: 6px;
+        }
+        
+        /* Boot animation */
+        .boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--background);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .boot-logo {
+            font-size: 3em;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        .ascii-logo {
+            font-family: monospace;
+            white-space: pre;
+            text-align: center;
+            margin-bottom: 20px;
+            animation: flicker 0.5s infinite;
+        }
+        
+        .boot-message {
+            font-size: 1em;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+        
+        @keyframes flicker {
+            0% { opacity: 0.9; }
+            50% { opacity: 1; }
+            100% { opacity: 0.9; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Boot screen -->
+    <div id="boot-screen" class="boot-screen">
+        <div class="boot-logo">
+            <i class="fas fa-power-off"></i>
+        </div>
+        <div class="ascii-logo">
+██████╗  █████╗ ██╗   ██╗ ██████╗ ███████╗
+██╔══██╗██╔══██╗██║   ██║██╔═══██╗██╔════╝
+██║  ██║███████║██║   ██║██║   ██║███████╗
+██║  ██║██╔══██║╚██╗ ██╔╝██║   ██║╚════██║
+██████╔╝██║  ██║ ╚████╔╝ ╚██████╔╝███████║
+╚═════╝ ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚══════╝
+                                          
+HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
+        </div>
+        <div class="boot-message">SYSTEM BOOT SEQUENCE INITIATED...</div>
+    </div>
+
+    <!-- Grid background -->
+    <div class="grid-background"></div>
+
+    <!-- Header -->
+    <header>
+        <div class="header-title">
+            <i class="fas fa-desktop"></i>
+            <span>DAVOS HEAVY INDUSTRIES</span>
+        </div>
+        <div class="security-indicator">
+            <i class="fas fa-shield-alt"></i>
+            <span id="security-level">SECURITY LEVEL: PUBLIC</span>
+            <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
+                <i class="fas fa-lock"></i>
+                LOGOUT
+            </button>
+        </div>
+    </header>
+
+    <!-- Main container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>MISSION LOGS</h2>
+            
+            <!-- Login form (visible when not authenticated) -->
+            <div id="login-form" class="login-form">
+                <h3>SECURE LOGIN</h3>
+                <div class="form-group">
+                    <label for="username">USER ID</label>
+                    <input type="text" id="username" placeholder="Enter user ID">
+                </div>
+                <div class="form-group">
+                    <label for="password">PASSKEY</label>
+                    <input type="password" id="password" placeholder="Enter passkey">
+                </div>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+                <button id="login-btn">
+                    <i class="fas fa-lock"></i>
+                    ACCESS
+                </button>
+            </div>
+            
+            <!-- Log entries list -->
+            <div id="log-list" class="log-list">
+                <!-- Logs will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="main-content">
+            <div class="content-container">
+                <div id="log-detail">
+                    <!-- Log details will be populated by JavaScript -->
+                </div>
+                
+                <!-- Default welcome message -->
+                <div id="welcome-message" class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="welcome-title">MISSION DATA CORE</h3>
+                    <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
+                    <div id="security-warning" class="security-warning">
+                        <p>WARNING: Some mission logs require security clearance.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Footer with status -->
+            <div class="footer">
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>SYSTEM OPERATIONAL</span>
+                </div>
+                <div id="user-status" class="user-status">
+                    <span>PUBLIC ACCESS MODE</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Log data (this would normally be stored in a separate JSON file)
+        const logs = {
+            public: [
+                {
+                    id: 1,
+                    title: 'MISSION REPORT: Derelict Vessel "Chronos"',
+                    date: '2385.03.15',
+                    preview: 'Team encountered unknown biological entities in cargo hold B. Three casualties reported.',
+                    type: 'public',
+                    content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
+                    hasImage: true,
+                    imageCaption: 'Chronos Vessel Exterior Scan'
+                },
+                {
+                    id: 2,
+                    title: 'INCIDENT REPORT: Colony Outpost "New Horizon"',
+                    date: '2385.04.02',
+                    preview: 'Communication blackout investigated. Colony found abandoned.',
+                    type: 'public',
+                    content: 'Following a 72-hour communication blackout, Team Bravo was dispatched to investigate New Horizon colony. The outpost was found abandoned with no signs of violence or forced evacuation.\n\nPower systems were operational. Food supplies untouched. Personal items left behind. The colony AI system "HERA" was unresponsive.\n\nData logs showed no unusual activity prior to the blackout. Search teams discovered unusual markings on the walls of the colony\'s lower levels. Samples have been collected for analysis.\n\nColony has been quarantined until further notice.',
+                    hasImage: false
+                },
+                {
+                    id: 5,
+                    title: 'EQUIPMENT REQUISITION: Deep Space Exploration',
+                    date: '2385.05.10',
+                    preview: 'Standard loadout plus specialized containment equipment approved.',
+                    type: 'public',
+                    content: 'The following equipment has been approved for deep space exploration mission DS-279:\n\n- Standard EVA suits (x6)\n- Extended life support modules (x12)\n- Portable atmosphere analyzer (x2)\n- Multi-spectrum scanners (x3)\n- Emergency medical kits (x4)\n- Portable containment units, Level 3 (x2)\n- Specimen collection kits (x10)\n- Emergency beacon system\n- Short-range shuttle craft\n\nAll equipment must be checked and certified by Security Officer Jensen before departure. Any unauthorized equipment will be confiscated and may result in mission delay.',
+                    hasImage: false
+                }
+            ],
+            private: [
+                {
+                    id: 3,
+                    title: 'CLASSIFIED: Autopsy Results - Chronos Incident',
+                    date: '2385.03.16',
+                    preview: 'Bio-weapon hypothesis confirmed. Genetic material does not match known database.',
+                    type: 'private',
+                    content: 'Autopsies performed on the three deceased crew members recovered from the Chronos revealed evidence of rapid cellular degradation. The biological agent appears to target the central nervous system, causing hallucinations before complete neural shutdown.\n\nGenetic sequencing of the agent shows no match to any known pathogen in the Davos Heavy Industries bioweapon database. Dr. Nakamura has expressed concern that this may be evidence of unauthorized experimentation or, more concerning, first contact with a non-terrestrial biological entity.\n\nRecommend immediate CLASS 4 containment protocols for all recovered specimens.',
+                    hasImage: true,
+                    imageCaption: 'Microscopic Analysis of Unknown Pathogen'
+                },
+                {
+                    id: 4,
+                    title: 'EXECUTIVE BRIEF: New Horizon Situation',
+                    date: '2385.04.03',
+                    preview: 'Evidence suggests mass psychosis event. Possible memetic contamination.',
+                    type: 'private',
+                    content: 'Analysis of the markings found at New Horizon colony indicates a possible memetic contamination event. The symbols appear to follow mathematical patterns associated with previous incidents at research stations Epsilon and Gamma-7.\n\nSecurity footage recovered from HERA\'s backup systems shows colonists exhibiting increasing paranoia and ritualistic behavior in the 48 hours preceding the blackout. The colony\'s logs indicate all 47 colonists left the outpost on foot, heading northwest into the planet\'s unexplored mountain range. Satellite imagery has not been able to locate them.\n\nThe markings have been classified as BLACKSTAR level threat. All personnel involved in the investigation have been scheduled for psychological evaluation.',
+                    hasImage: true,
+                    imageCaption: 'Symbol Pattern Analysis'
+                },
+                {
+                    id: 6,
+                    title: 'TRANSMISSION INTERCEPT: Unknown Origin',
+                    date: '2385.05.12',
+                    preview: 'Signal detected from sector 7. Linguistic analysis inconclusive.',
+                    type: 'private',
+                    content: 'At 0347 hours, deep space monitoring station Tango-9 detected an encrypted transmission originating from the unexplored region of sector 7. Signal pattern does not match any known human communication protocols.\n\nPreliminary linguistic analysis suggests an organized structure indicating intelligent origin, but translation efforts have been unsuccessful. The transmission lasted 73 seconds and has not repeated.\n\nOf particular concern is that the signal appears to have been directed specifically at Davos Heavy Industries research vessel "Horizon Seeker," which was conducting routine exploration approximately 4.3 light years from the signal origin.\n\nRecommend immediate recall of all vessels in the vicinity and establishment of a quarantine zone around sector 7 pending further investigation.',
+                    hasImage: false
+                }
+            ]
+        };
+
+        // Authentication settings
+        const users = {
+            'admin': 'mothership', // In a real implementation, you'd use hashed passwords
+            'gamemaster': 'deepspace',
+            'player': 'android'
+        };
+
+        // Application state
+        let state = {
+            authenticated: false,
+            username: '',
+            visibleLogs: [],
+            selectedLog: null
+        };
+
+        // DOM Elements
+        const elements = {
+            bootScreen: document.getElementById('boot-screen'),
+            securityLevel: document.getElementById('security-level'),
+            loginForm: document.getElementById('login-form'),
+            loginError: document.getElementById('login-error'),
+            logoutBtn: document.getElementById('logout-btn'),
+            securityWarning: document.getElementById('security-warning'),
+            logList: document.getElementById('log-list'),
+            logDetail: document.getElementById('log-detail'),
+            welcomeMessage: document.getElementById('welcome-message'),
+            userStatus: document.getElementById('user-status')
+        };
+
+        // Check for existing session
+        function checkSession() {
+            const savedSession = localStorage.getItem('davosSession');
+            if (savedSession) {
+                const session = JSON.parse(savedSession);
+                if (session.username && users[session.username]) {
+                    state.authenticated = true;
+                    state.username = session.username;
+                    updateUI();
+                }
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+        // Handle login
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username] === password) {
+                state.authenticated = true;
+                state.username = username;
+                
+                // Save session to localStorage
+                localStorage.setItem('davosSession', JSON.stringify({
+                    username: username,
+                    timestamp: new Date().getTime()
+                }));
+                
+                elements.loginError.style.display = 'none';
+                updateUI();
+            } else {
+                elements.loginError.textContent = 'ACCESS DENIED: Invalid credentials';
+                elements.loginError.style.display = 'block';
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            state.authenticated = false;
+            state.username = '';
+            state.selectedLog = null;
+            
+            // Clear session
+            localStorage.removeItem('davosSession');
+            
+            updateUI();
+        }
+
+        // Update UI based on state
+        function updateUI() {
+            // Update visible logs
+            state.visibleLogs = logs.public.slice(); // Copy public logs
+            
+            if (state.authenticated) {
+                state.visibleLogs = state.visibleLogs.concat(logs.private); // Add private logs
+                
+                // Update security indicators
+                elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
+                elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
+                
+                // Show logout button, hide login form
+                elements.loginForm.style.display = 'none';
+                elements.logoutBtn.style.display = 'inline-flex';
+                
+                // Hide security warning
+                elements.securityWarning.style.display = 'none';
+            } else {
+                // Update security indicators
+                elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
+                elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
+                
+                // Show login form, hide logout button
+                elements.loginForm.style.display = 'block';
+                elements.logoutBtn.style.display = 'none';
+                
+                // Show security warning
+                elements.securityWarning.style.display = 'block';
+            }
+            
+            // Clear fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            // Render logs
+            renderLogs();
+            
+            // Render selected log or welcome message
+            if (state.selectedLog) {
+                renderLogDetail(state.selectedLog);
+                elements.welcomeMessage.style.display = 'none';
+                elements.logDetail.style.display = 'block';
+            } else {
+                elements.welcomeMessage.style.display = 'flex';
+                elements.logDetail.style.display = 'none';
+            }
+        }
+
+        // Render log list
+        function renderLogs() {
+            // Sort logs by date (newest first)
+            const sortedLogs = state.visibleLogs.sort((a, b) => {
+                return b.date.localeCompare(a.date);
+            });
+            
+            elements.logList.innerHTML = '';
+            
+            sortedLogs.forEach(log => {
+                const logElement = document.createElement('div');
+                logElement.className = `log-entry ${state.selectedLog && state.selectedLog.id === log.id ? 'selected' : ''}`;
+                logElement.dataset.id = log.id;
+                
+                const visibilityClass = log.type === 'public' ? 'public' : 'private';
+                const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
+                const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+                
+                logElement.innerHTML = `
+                    <div class="log-header">
+                        <span class="log-date">${log.date}</span>
+                        <span class="log-visibility ${visibilityClass}">
+                            <i class="fas ${visibilityIcon}"></i>
+                            <span>${visibilityText}</span>
+                        </span>
+                    </div>
+                    <h3 class="log-title">${log.title}</h3>
+                    <p class="log-preview">${log.preview}</p>
+                `;
+                
+                logElement.addEventListener('click', () => {
+                    selectLog(log);
+                });
+                
+                elements.logList.appendChild(logElement);
+            });
+        }
+
+        // Select a log
+        function selectLog(log) {
+            state.selectedLog = log;
+            updateUI();
+        }
+
+        // Render log detail
+        function renderLogDetail(log) {
+            const visibilityClass = log.type === 'public' ? 'public' : 'private';
+            const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
+            const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+            
+            let html = `
+                <div class="log-detail-header">
+                    <h2 class="log-detail-title">${log.title}</h2>
+                    <div class="log-detail-meta">
+                        <span class="log-detail-date">REF: ${log.date}</span>
+                        <span class="log-visibility ${visibilityClass}">
+                            <i class="fas ${visibilityIcon}"></i>
+                            <span>${visibilityText}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="log-content">
+                    ${log.content}
+                </div>
+            `;
+            
+            // Add image if log has one
+            if (log.hasImage) {
+                html += `
+                    <div class="log-image">
+                        <div class="image-placeholder">
+                            <span>[IMAGE PLACEHOLDER]</span>
+                            <span class="image-placeholder-caption">${log.imageCaption}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            elements.logDetail.innerHTML = html;
+        }
+
+        // Boot sequence
+        function runBootSequence() {
+            setTimeout(() => {
+                elements.bootScreen.style.opacity = '0';
+                elements.bootScreen.style.transition = 'opacity 1s';
+                
+                setTimeout(() => {
+                    elements.bootScreen.style.display = 'none';
+                    
+                    // Check for existing session
+                    checkSession();
+                    
+                    // Initialize UI
+                    updateUI();
+                }, 1000);
+            }, 2500);
+        }
+
+        // Start boot sequence
+        runBootSequence();
+    </script>
+</body>
+</html>

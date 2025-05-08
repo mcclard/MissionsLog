@@ -150,6 +150,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 8px;
         }
         
         button i {
@@ -159,6 +160,50 @@
         button.logout-btn {
             border-color: var(--accent2);
             color: var(--accent2);
+        }
+
+        button.edit-btn {
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        button.cancel-btn {
+            border-color: var(--accent2);
+            color: var(--accent2);
+            margin-right: 8px;
+        }
+
+        button.save-btn {
+            border-color: var(--accent1);
+            color: var(--accent1);
+        }
+
+        /* Admin tools */
+        .admin-tools {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .admin-tools h3 {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .admin-button-group {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .admin-button-group button {
+            flex: 1;
+            margin-right: 4px;
+        }
+
+        .admin-button-group button:last-child {
+            margin-right: 0;
         }
         
         /* Log entries */
@@ -329,6 +374,86 @@
             color: var(--accent2);
             border-radius: 4px;
         }
+
+        /* Edit form */
+        .edit-form {
+            display: none;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .edit-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .edit-form input[type="text"],
+        .edit-form input[type="date"],
+        .edit-form select,
+        .edit-form textarea {
+            width: 100%;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            color: var(--accent1);
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+        }
+
+        .edit-form textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .edit-form .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .edit-form .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+        }
+
+        .edit-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        .new-log-form {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            display: none;
+            margin-bottom: 16px;
+        }
+
+        /* Image upload */
+        .image-upload {
+            margin-top: 16px;
+        }
+
+        .image-preview {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            color: var(--accent1);
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+            margin-top: 8px;
+        }
         
         /* Footer */
         .footer {
@@ -407,6 +532,55 @@
             50% { opacity: 1; }
             100% { opacity: 0.9; }
         }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            border-radius: 4px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--darkAccent);
+        }
+
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--accent2);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -470,6 +644,69 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     ACCESS
                 </button>
             </div>
+
+            <!-- Admin tools (visible when authenticated) -->
+            <div id="admin-tools" class="admin-tools">
+                <h3>ADMIN CONTROLS</h3>
+                <button id="new-log-btn">
+                    <i class="fas fa-plus"></i>
+                    NEW MISSION LOG
+                </button>
+                <button id="export-logs-btn">
+                    <i class="fas fa-download"></i>
+                    EXPORT ALL LOGS
+                </button>
+                <button id="import-logs-btn">
+                    <i class="fas fa-upload"></i>
+                    IMPORT LOGS
+                </button>
+            </div>
+
+            <!-- New log form -->
+            <div id="new-log-form" class="new-log-form">
+                <h3>CREATE NEW LOG</h3>
+                <div class="form-group">
+                    <label for="new-log-title">TITLE</label>
+                    <input type="text" id="new-log-title" placeholder="Enter log title">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-date">DATE</label>
+                    <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-preview">PREVIEW</label>
+                    <input type="text" id="new-log-preview" placeholder="Brief description">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-type">TYPE</label>
+                    <select id="new-log-type">
+                        <option value="public">PUBLIC</option>
+                        <option value="private">CLASSIFIED</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-log-content">CONTENT</label>
+                    <textarea id="new-log-content" placeholder="Enter log content"></textarea>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="new-log-has-image">
+                    <label for="new-log-has-image">INCLUDE IMAGE</label>
+                </div>
+                <div class="form-group" id="new-log-image-caption-group" style="display: none;">
+                    <label for="new-log-image-caption">IMAGE CAPTION</label>
+                    <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
+                </div>
+                <div class="edit-actions">
+                    <button id="cancel-new-log-btn" class="cancel-btn">
+                        <i class="fas fa-times"></i>
+                        CANCEL
+                    </button>
+                    <button id="save-new-log-btn" class="save-btn">
+                        <i class="fas fa-save"></i>
+                        SAVE
+                    </button>
+                </div>
+            </div>
             
             <!-- Log entries list -->
             <div id="log-list" class="log-list">
@@ -480,8 +717,54 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         <!-- Main content area -->
         <div class="main-content">
             <div class="content-container">
-                <div id="log-detail">
+                <!-- View log detail -->
+                <div id="log-detail" style="display: none;">
                     <!-- Log details will be populated by JavaScript -->
+                </div>
+
+                <!-- Edit log form -->
+                <div id="edit-form" class="edit-form">
+                    <div class="form-group">
+                        <label for="edit-title">TITLE</label>
+                        <input type="text" id="edit-title">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-date">DATE</label>
+                        <input type="text" id="edit-date">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-preview">PREVIEW</label>
+                        <input type="text" id="edit-preview">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-type">TYPE</label>
+                        <select id="edit-type">
+                            <option value="public">PUBLIC</option>
+                            <option value="private">CLASSIFIED</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-content">CONTENT</label>
+                        <textarea id="edit-content"></textarea>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="edit-has-image">
+                        <label for="edit-has-image">INCLUDE IMAGE</label>
+                    </div>
+                    <div class="form-group" id="edit-image-caption-group">
+                        <label for="edit-image-caption">IMAGE CAPTION</label>
+                        <input type="text" id="edit-image-caption">
+                    </div>
+                    <div class="edit-actions">
+                        <button id="cancel-edit-btn" class="cancel-btn">
+                            <i class="fas fa-times"></i>
+                            CANCEL
+                        </button>
+                        <button id="save-edit-btn" class="save-btn">
+                            <i class="fas fa-save"></i>
+                            SAVE
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Default welcome message -->
@@ -510,9 +793,29 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         </div>
     </div>
 
+    <!-- Import modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">IMPORT LOGS</h3>
+                <button class="close-modal" id="close-import-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="import-file">SELECT JSON FILE</label>
+                <input type="file" id="import-file" accept=".json">
+            </div>
+            <div class="form-group">
+                <button id="import-confirm-btn" class="save-btn">
+                    <i class="fas fa-upload"></i>
+                    IMPORT
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Log data (this would normally be stored in a separate JSON file)
-        const logs = {
+        const initialLogs = {
             public: [
                 {
                     id: 1,
@@ -562,251 +865,4 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     type: 'private',
                     content: 'Analysis of the markings found at New Horizon colony indicates a possible memetic contamination event. The symbols appear to follow mathematical patterns associated with previous incidents at research stations Epsilon and Gamma-7.\n\nSecurity footage recovered from HERA\'s backup systems shows colonists exhibiting increasing paranoia and ritualistic behavior in the 48 hours preceding the blackout. The colony\'s logs indicate all 47 colonists left the outpost on foot, heading northwest into the planet\'s unexplored mountain range. Satellite imagery has not been able to locate them.\n\nThe markings have been classified as BLACKSTAR level threat. All personnel involved in the investigation have been scheduled for psychological evaluation.',
                     hasImage: true,
-                    imageCaption: 'Symbol Pattern Analysis'
-                },
-                {
-                    id: 6,
-                    title: 'TRANSMISSION INTERCEPT: Unknown Origin',
-                    date: '2385.05.12',
-                    preview: 'Signal detected from sector 7. Linguistic analysis inconclusive.',
-                    type: 'private',
-                    content: 'At 0347 hours, deep space monitoring station Tango-9 detected an encrypted transmission originating from the unexplored region of sector 7. Signal pattern does not match any known human communication protocols.\n\nPreliminary linguistic analysis suggests an organized structure indicating intelligent origin, but translation efforts have been unsuccessful. The transmission lasted 73 seconds and has not repeated.\n\nOf particular concern is that the signal appears to have been directed specifically at Davos Heavy Industries research vessel "Horizon Seeker," which was conducting routine exploration approximately 4.3 light years from the signal origin.\n\nRecommend immediate recall of all vessels in the vicinity and establishment of a quarantine zone around sector 7 pending further investigation.',
-                    hasImage: false
-                }
-            ]
-        };
-
-        // Authentication settings
-        const users = {
-            'admin': 'mothership', // In a real implementation, you'd use hashed passwords
-            'gamemaster': 'deepspace',
-            'player': 'android'
-        };
-
-        // Application state
-        let state = {
-            authenticated: false,
-            username: '',
-            visibleLogs: [],
-            selectedLog: null
-        };
-
-        // DOM Elements
-        const elements = {
-            bootScreen: document.getElementById('boot-screen'),
-            securityLevel: document.getElementById('security-level'),
-            loginForm: document.getElementById('login-form'),
-            loginError: document.getElementById('login-error'),
-            logoutBtn: document.getElementById('logout-btn'),
-            securityWarning: document.getElementById('security-warning'),
-            logList: document.getElementById('log-list'),
-            logDetail: document.getElementById('log-detail'),
-            welcomeMessage: document.getElementById('welcome-message'),
-            userStatus: document.getElementById('user-status')
-        };
-
-        // Check for existing session
-        function checkSession() {
-            const savedSession = localStorage.getItem('davosSession');
-            if (savedSession) {
-                const session = JSON.parse(savedSession);
-                if (session.username && users[session.username]) {
-                    state.authenticated = true;
-                    state.username = session.username;
-                    updateUI();
-                }
-            }
-        }
-
-        // Event Listeners
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
-
-        // Handle login
-        function handleLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (users[username] && users[username] === password) {
-                state.authenticated = true;
-                state.username = username;
-                
-                // Save session to localStorage
-                localStorage.setItem('davosSession', JSON.stringify({
-                    username: username,
-                    timestamp: new Date().getTime()
-                }));
-                
-                elements.loginError.style.display = 'none';
-                updateUI();
-            } else {
-                elements.loginError.textContent = 'ACCESS DENIED: Invalid credentials';
-                elements.loginError.style.display = 'block';
-            }
-        }
-
-        // Handle logout
-        function handleLogout() {
-            state.authenticated = false;
-            state.username = '';
-            state.selectedLog = null;
-            
-            // Clear session
-            localStorage.removeItem('davosSession');
-            
-            updateUI();
-        }
-
-        // Update UI based on state
-        function updateUI() {
-            // Update visible logs
-            state.visibleLogs = logs.public.slice(); // Copy public logs
-            
-            if (state.authenticated) {
-                state.visibleLogs = state.visibleLogs.concat(logs.private); // Add private logs
-                
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
-                elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
-                
-                // Show logout button, hide login form
-                elements.loginForm.style.display = 'none';
-                elements.logoutBtn.style.display = 'inline-flex';
-                
-                // Hide security warning
-                elements.securityWarning.style.display = 'none';
-            } else {
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
-                elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
-                
-                // Show login form, hide logout button
-                elements.loginForm.style.display = 'block';
-                elements.logoutBtn.style.display = 'none';
-                
-                // Show security warning
-                elements.securityWarning.style.display = 'block';
-            }
-            
-            // Clear fields
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            
-            // Render logs
-            renderLogs();
-            
-            // Render selected log or welcome message
-            if (state.selectedLog) {
-                renderLogDetail(state.selectedLog);
-                elements.welcomeMessage.style.display = 'none';
-                elements.logDetail.style.display = 'block';
-            } else {
-                elements.welcomeMessage.style.display = 'flex';
-                elements.logDetail.style.display = 'none';
-            }
-        }
-
-        // Render log list
-        function renderLogs() {
-            // Sort logs by date (newest first)
-            const sortedLogs = state.visibleLogs.sort((a, b) => {
-                return b.date.localeCompare(a.date);
-            });
-            
-            elements.logList.innerHTML = '';
-            
-            sortedLogs.forEach(log => {
-                const logElement = document.createElement('div');
-                logElement.className = `log-entry ${state.selectedLog && state.selectedLog.id === log.id ? 'selected' : ''}`;
-                logElement.dataset.id = log.id;
-                
-                const visibilityClass = log.type === 'public' ? 'public' : 'private';
-                const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-                const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
-                
-                logElement.innerHTML = `
-                    <div class="log-header">
-                        <span class="log-date">${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
-                    </div>
-                    <h3 class="log-title">${log.title}</h3>
-                    <p class="log-preview">${log.preview}</p>
-                `;
-                
-                logElement.addEventListener('click', () => {
-                    selectLog(log);
-                });
-                
-                elements.logList.appendChild(logElement);
-            });
-        }
-
-        // Select a log
-        function selectLog(log) {
-            state.selectedLog = log;
-            updateUI();
-        }
-
-        // Render log detail
-        function renderLogDetail(log) {
-            const visibilityClass = log.type === 'public' ? 'public' : 'private';
-            const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-            const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
-            
-            let html = `
-                <div class="log-detail-header">
-                    <h2 class="log-detail-title">${log.title}</h2>
-                    <div class="log-detail-meta">
-                        <span class="log-detail-date">REF: ${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="log-content">
-                    ${log.content}
-                </div>
-            `;
-            
-            // Add image if log has one
-            if (log.hasImage) {
-                html += `
-                    <div class="log-image">
-                        <div class="image-placeholder">
-                            <span>[IMAGE PLACEHOLDER]</span>
-                            <span class="image-placeholder-caption">${log.imageCaption}</span>
-                        </div>
-                    </div>
-                `;
-            }
-            
-            elements.logDetail.innerHTML = html;
-        }
-
-        // Boot sequence
-        function runBootSequence() {
-            setTimeout(() => {
-                elements.bootScreen.style.opacity = '0';
-                elements.bootScreen.style.transition = 'opacity 1s';
-                
-                setTimeout(() => {
-                    elements.bootScreen.style.display = 'none';
-                    
-                    // Check for existing session
-                    checkSession();
-                    
-                    // Initialize UI
-                    updateUI();
-                }, 1000);
-            }, 2500);
-        }
-
-        // Start boot sequence
-        runBootSequence();
-    </script>
-</body>
-</html>
+                    imageCaption: 'Symbol

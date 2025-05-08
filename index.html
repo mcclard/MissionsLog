@@ -28,12 +28,15 @@
             background-color: var(--background);
             color: var(--accent1);
             line-height: 1.6;
-            overflow: hidden;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
         }
         
+        #app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
         /* Grid background */
         .grid-background {
             position: absolute;
@@ -150,7 +153,6 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
         }
         
         button i {
@@ -160,50 +162,6 @@
         button.logout-btn {
             border-color: var(--accent2);
             color: var(--accent2);
-        }
-
-        button.edit-btn {
-            border-color: var(--accent3);
-            color: var(--accent3);
-        }
-
-        button.cancel-btn {
-            border-color: var(--accent2);
-            color: var(--accent2);
-            margin-right: 8px;
-        }
-
-        button.save-btn {
-            border-color: var(--accent1);
-            color: var(--accent1);
-        }
-
-        /* Admin tools */
-        .admin-tools {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .admin-tools h3 {
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-
-        .admin-button-group {
-            display: flex;
-            margin-bottom: 8px;
-        }
-
-        .admin-button-group button {
-            flex: 1;
-            margin-right: 4px;
-        }
-
-        .admin-button-group button:last-child {
-            margin-right: 0;
         }
         
         /* Log entries */
@@ -374,86 +332,6 @@
             color: var(--accent2);
             border-radius: 4px;
         }
-
-        /* Edit form */
-        .edit-form {
-            display: none;
-        }
-
-        .edit-form .form-group {
-            margin-bottom: 16px;
-        }
-
-        .edit-form label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .edit-form input[type="text"],
-        .edit-form input[type="date"],
-        .edit-form select,
-        .edit-form textarea {
-            width: 100%;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-            border-radius: 4px;
-        }
-
-        .edit-form textarea {
-            height: 200px;
-            resize: vertical;
-        }
-
-        .edit-form .checkbox-group {
-            display: flex;
-            align-items: center;
-        }
-
-        .edit-form .checkbox-group input[type="checkbox"] {
-            margin-right: 8px;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-        }
-
-        .edit-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 16px;
-        }
-
-        .new-log-form {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            display: none;
-            margin-bottom: 16px;
-        }
-
-        /* Image upload */
-        .image-upload {
-            margin-top: 16px;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 200px;
-            margin-top: 8px;
-            display: none;
-        }
-
-        input[type="file"] {
-            width: 100%;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-            border-radius: 4px;
-            margin-top: 8px;
-        }
         
         /* Footer */
         .footer {
@@ -532,55 +410,6 @@
             50% { opacity: 1; }
             100% { opacity: 0.9; }
         }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            border-radius: 4px;
-            padding: 24px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--darkAccent);
-        }
-
-        .modal-title {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--accent2);
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
-        }
     </style>
 </head>
 <body>
@@ -602,220 +431,94 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         <div class="boot-message">SYSTEM BOOT SEQUENCE INITIATED...</div>
     </div>
 
-    <!-- Grid background -->
-    <div class="grid-background"></div>
+    <!-- Main App Container -->
+    <div id="app-container" style="display: none;">
+        <!-- Grid background -->
+        <div class="grid-background"></div>
 
-    <!-- Header -->
-    <header>
-        <div class="header-title">
-            <i class="fas fa-desktop"></i>
-            <span>DAVOS HEAVY INDUSTRIES</span>
-        </div>
-        <div class="security-indicator">
-            <i class="fas fa-shield-alt"></i>
-            <span id="security-level">SECURITY LEVEL: PUBLIC</span>
-            <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
-                <i class="fas fa-lock"></i>
-                LOGOUT
-            </button>
-        </div>
-    </header>
-
-    <!-- Main container -->
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h2>MISSION LOGS</h2>
-            
-            <!-- Login form (visible when not authenticated) -->
-            <div id="login-form" class="login-form">
-                <h3>SECURE LOGIN</h3>
-                <div class="form-group">
-                    <label for="username">USER ID</label>
-                    <input type="text" id="username" placeholder="Enter user ID">
-                </div>
-                <div class="form-group">
-                    <label for="password">PASSKEY</label>
-                    <input type="password" id="password" placeholder="Enter passkey">
-                </div>
-                <div id="login-error" class="login-error" style="display: none;"></div>
-                <button id="login-btn">
+        <!-- Header -->
+        <header>
+            <div class="header-title">
+                <i class="fas fa-desktop"></i>
+                <span>DAVOS HEAVY INDUSTRIES</span>
+            </div>
+            <div class="security-indicator">
+                <i class="fas fa-shield-alt"></i>
+                <span id="security-level">SECURITY LEVEL: PUBLIC</span>
+                <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
                     <i class="fas fa-lock"></i>
-                    ACCESS
+                    LOGOUT
                 </button>
             </div>
+        </header>
 
-            <!-- Admin tools (visible when authenticated) -->
-            <div id="admin-tools" class="admin-tools">
-                <h3>ADMIN CONTROLS</h3>
-                <button id="new-log-btn">
-                    <i class="fas fa-plus"></i>
-                    NEW MISSION LOG
-                </button>
-                <button id="export-logs-btn">
-                    <i class="fas fa-download"></i>
-                    EXPORT ALL LOGS
-                </button>
-                <button id="import-logs-btn">
-                    <i class="fas fa-upload"></i>
-                    IMPORT LOGS
-                </button>
-            </div>
-
-            <!-- New log form -->
-            <div id="new-log-form" class="new-log-form">
-                <h3>CREATE NEW LOG</h3>
-                <div class="form-group">
-                    <label for="new-log-title">TITLE</label>
-                    <input type="text" id="new-log-title" placeholder="Enter log title">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-date">DATE</label>
-                    <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-preview">PREVIEW</label>
-                    <input type="text" id="new-log-preview" placeholder="Brief description">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-type">TYPE</label>
-                    <select id="new-log-type">
-                        <option value="public">PUBLIC</option>
-                        <option value="private">CLASSIFIED</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="new-log-content">CONTENT</label>
-                    <textarea id="new-log-content" placeholder="Enter log content"></textarea>
-                </div>
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="new-log-has-image">
-                    <label for="new-log-has-image">INCLUDE IMAGE</label>
-                </div>
-                <div class="form-group" id="new-log-image-caption-group" style="display: none;">
-                    <label for="new-log-image-caption">IMAGE CAPTION</label>
-                    <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
-                </div>
-                <div class="edit-actions">
-                    <button id="cancel-new-log-btn" class="cancel-btn">
-                        <i class="fas fa-times"></i>
-                        CANCEL
+        <!-- Main container -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h2>MISSION LOGS</h2>
+                
+                <!-- Login form (visible when not authenticated) -->
+                <div id="login-form" class="login-form">
+                    <h3>SECURE LOGIN</h3>
+                    <div class="form-group">
+                        <label for="username">USER ID</label>
+                        <input type="text" id="username" placeholder="Enter user ID">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">PASSKEY</label>
+                        <input type="password" id="password" placeholder="Enter passkey">
+                    </div>
+                    <div id="login-error" class="login-error" style="display: none;"></div>
+                    <button id="login-btn">
+                        <i class="fas fa-lock"></i>
+                        ACCESS
                     </button>
-                    <button id="save-new-log-btn" class="save-btn">
-                        <i class="fas fa-save"></i>
-                        SAVE
-                    </button>
+                </div>
+                
+                <!-- Log entries list -->
+                <div id="log-list" class="log-list">
+                    <!-- Logs will be populated by JavaScript -->
                 </div>
             </div>
             
-            <!-- Log entries list -->
-            <div id="log-list" class="log-list">
-                <!-- Logs will be populated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Main content area -->
-        <div class="main-content">
-            <div class="content-container">
-                <!-- View log detail -->
-                <div id="log-detail" style="display: none;">
-                    <!-- Log details will be populated by JavaScript -->
-                </div>
-
-                <!-- Edit log form -->
-                <div id="edit-form" class="edit-form">
-                    <div class="form-group">
-                        <label for="edit-title">TITLE</label>
-                        <input type="text" id="edit-title">
+            <!-- Main content area -->
+            <div class="main-content">
+                <div class="content-container">
+                    <div id="log-detail">
+                        <!-- Log details will be populated by JavaScript -->
                     </div>
-                    <div class="form-group">
-                        <label for="edit-date">DATE</label>
-                        <input type="text" id="edit-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-preview">PREVIEW</label>
-                        <input type="text" id="edit-preview">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-type">TYPE</label>
-                        <select id="edit-type">
-                            <option value="public">PUBLIC</option>
-                            <option value="private">CLASSIFIED</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-content">CONTENT</label>
-                        <textarea id="edit-content"></textarea>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="edit-has-image">
-                        <label for="edit-has-image">INCLUDE IMAGE</label>
-                    </div>
-                    <div class="form-group" id="edit-image-caption-group">
-                        <label for="edit-image-caption">IMAGE CAPTION</label>
-                        <input type="text" id="edit-image-caption">
-                    </div>
-                    <div class="edit-actions">
-                        <button id="cancel-edit-btn" class="cancel-btn">
-                            <i class="fas fa-times"></i>
-                            CANCEL
-                        </button>
-                        <button id="save-edit-btn" class="save-btn">
-                            <i class="fas fa-save"></i>
-                            SAVE
-                        </button>
+                    
+                    <!-- Default welcome message -->
+                    <div id="welcome-message" class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <h3 class="welcome-title">MISSION DATA CORE</h3>
+                        <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
+                        <div id="security-warning" class="security-warning">
+                            <p>WARNING: Some mission logs require security clearance.</p>
+                        </div>
                     </div>
                 </div>
                 
-                <!-- Default welcome message -->
-                <div id="welcome-message" class="welcome-message">
-                    <div class="welcome-icon">
-                        <i class="fas fa-file-alt"></i>
+                <!-- Footer with status -->
+                <div class="footer">
+                    <div class="system-status">
+                        <div class="status-indicator"></div>
+                        <span>SYSTEM OPERATIONAL</span>
                     </div>
-                    <h3 class="welcome-title">MISSION DATA CORE</h3>
-                    <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
-                    <div id="security-warning" class="security-warning">
-                        <p>WARNING: Some mission logs require security clearance.</p>
+                    <div id="user-status" class="user-status">
+                        <span>PUBLIC ACCESS MODE</span>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Footer with status -->
-            <div class="footer">
-                <div class="system-status">
-                    <div class="status-indicator"></div>
-                    <span>SYSTEM OPERATIONAL</span>
-                </div>
-                <div id="user-status" class="user-status">
-                    <span>PUBLIC ACCESS MODE</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import modal -->
-    <div id="import-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">IMPORT LOGS</h3>
-                <button class="close-modal" id="close-import-modal">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="import-file">SELECT JSON FILE</label>
-                <input type="file" id="import-file" accept=".json">
-            </div>
-            <div class="form-group">
-                <button id="import-confirm-btn" class="save-btn">
-                    <i class="fas fa-upload"></i>
-                    IMPORT
-                </button>
             </div>
         </div>
     </div>
 
     <script>
         // Log data (this would normally be stored in a separate JSON file)
-        const initialLogs = {
+        const logs = {
             public: [
                 {
                     id: 1,
@@ -835,546 +538,6 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     type: 'public',
                     content: 'Following a 72-hour communication blackout, Team Bravo was dispatched to investigate New Horizon colony. The outpost was found abandoned with no signs of violence or forced evacuation.\n\nPower systems were operational. Food supplies untouched. Personal items left behind. The colony AI system "HERA" was unresponsive.\n\nData logs showed no unusual activity prior to the blackout. Search teams discovered unusual markings on the walls of the colony\'s lower levels. Samples have been collected for analysis.\n\nColony has been quarantined until further notice.',
                     hasImage: false
-                }
-            ]
-        };
-
-        // Authentication settings
-        const users = {
-            'admin': 'mothership', // In a real implementation, you'd use hashed passwords
-            'gamemaster': 'deepspace',
-            'player': 'android'
-        };
-
-        // Application state
-        let state = {
-            authenticated: false,
-            username: '',
-            visibleLogs: [],
-            selectedLog: null,
-            editMode: false,
-            logs: JSON.parse(localStorage.getItem('davosLogs')) || JSON.parse(JSON.stringify(initialLogs)),
-            nextId: 7 // Start IDs after the initial set
-        };
-
-        // DOM Elements
-        const elements = {
-            bootScreen: document.getElementById('boot-screen'),
-            securityLevel: document.getElementById('security-level'),
-            loginForm: document.getElementById('login-form'),
-            loginError: document.getElementById('login-error'),
-            logoutBtn: document.getElementById('logout-btn'),
-            adminTools: document.getElementById('admin-tools'),
-            newLogForm: document.getElementById('new-log-form'),
-            securityWarning: document.getElementById('security-warning'),
-            logList: document.getElementById('log-list'),
-            logDetail: document.getElementById('log-detail'),
-            editForm: document.getElementById('edit-form'),
-            welcomeMessage: document.getElementById('welcome-message'),
-            userStatus: document.getElementById('user-status'),
-            importModal: document.getElementById('import-modal')
-        };
-
-        // Check for existing session
-        function checkSession() {
-            const savedSession = localStorage.getItem('davosSession');
-            if (savedSession) {
-                const session = JSON.parse(savedSession);
-                if (session.username && users[session.username]) {
-                    state.authenticated = true;
-                    state.username = session.username;
-                    updateUI();
-                }
-            }
-        }
-
-        // Event Listeners
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
-        document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
-        document.getElementById('cancel-new-log-btn').addEventListener('click', hideNewLogForm);
-        document.getElementById('save-new-log-btn').addEventListener('click', saveNewLog);
-        document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
-        document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
-        document.getElementById('export-logs-btn').addEventListener('click', exportLogs);
-        document.getElementById('import-logs-btn').addEventListener('click', showImportModal);
-        document.getElementById('close-import-modal').addEventListener('click', hideImportModal);
-        document.getElementById('import-confirm-btn').addEventListener('click', importLogs);
-        document.getElementById('new-log-has-image').addEventListener('change', toggleNewLogImageCaption);
-        document.getElementById('edit-has-image').addEventListener('change', toggleEditImageCaption);
-
-        // Handle login
-        function handleLogin() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (users[username] && users[username] === password) {
-                state.authenticated = true;
-                state.username = username;
-                
-                // Save session to localStorage
-                localStorage.setItem('davosSession', JSON.stringify({
-                    username: username,
-                    timestamp: new Date().getTime()
-                }));
-                
-                elements.loginError.style.display = 'none';
-                updateUI();
-            } else {
-                elements.loginError.textContent = 'ACCESS DENIED: Invalid credentials';
-                elements.loginError.style.display = 'block';
-            }
-        }
-
-        // Handle logout
-        function handleLogout() {
-            state.authenticated = false;
-            state.username = '';
-            state.selectedLog = null;
-            state.editMode = false;
-            
-            // Clear session
-            localStorage.removeItem('davosSession');
-            
-            updateUI();
-        }
-
-        // Update UI based on state
-        function updateUI() {
-            // Update visible logs
-            state.visibleLogs = state.logs.public.slice(); // Copy public logs
-            
-            if (state.authenticated) {
-                state.visibleLogs = state.visibleLogs.concat(state.logs.private); // Add private logs
-                
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
-                elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
-                
-                // Show logout button, hide login form, show admin tools
-                elements.loginForm.style.display = 'none';
-                elements.logoutBtn.style.display = 'inline-flex';
-                elements.adminTools.style.display = 'block';
-                
-                // Hide security warning
-                elements.securityWarning.style.display = 'none';
-            } else {
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
-                elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
-                
-                // Show login form, hide logout button, hide admin tools
-                elements.loginForm.style.display = 'block';
-                elements.logoutBtn.style.display = 'none';
-                elements.adminTools.style.display = 'none';
-                elements.newLogForm.style.display = 'none';
-                
-                // Show security warning
-                elements.securityWarning.style.display = 'block';
-            }
-            
-            // Clear fields
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
-            
-            // Render logs
-            renderLogs();
-            
-            // Render selected log or welcome message
-            if (state.selectedLog && !state.editMode) {
-                renderLogDetail(state.selectedLog);
-                elements.welcomeMessage.style.display = 'none';
-                elements.logDetail.style.display = 'block';
-                elements.editForm.style.display = 'none';
-            } else if (state.editMode && state.selectedLog) {
-                populateEditForm(state.selectedLog);
-                elements.welcomeMessage.style.display = 'none';
-                elements.logDetail.style.display = 'none';
-                elements.editForm.style.display = 'block';
-            } else {
-                elements.welcomeMessage.style.display = 'flex';
-                elements.logDetail.style.display = 'none';
-                elements.editForm.style.display = 'none';
-            }
-        }
-
-        // Render log list
-        function renderLogs() {
-            // Sort logs by date (newest first)
-            const sortedLogs = state.visibleLogs.sort((a, b) => {
-                return b.date.localeCompare(a.date);
-            });
-            
-            elements.logList.innerHTML = '';
-            
-            sortedLogs.forEach(log => {
-                const logElement = document.createElement('div');
-                logElement.className = `log-entry ${state.selectedLog && state.selectedLog.id === log.id ? 'selected' : ''}`;
-                logElement.dataset.id = log.id;
-                
-                const visibilityClass = log.type === 'public' ? 'public' : 'private';
-                const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-                const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
-                
-                logElement.innerHTML = `
-                    <div class="log-header">
-                        <span class="log-date">${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
-                    </div>
-                    <h3 class="log-title">${log.title}</h3>
-                    <p class="log-preview">${log.preview}</p>
-                `;
-                
-                logElement.addEventListener('click', () => {
-                    selectLog(log);
-                });
-                
-                elements.logList.appendChild(logElement);
-            });
-        }
-
-        // Select a log
-        function selectLog(log) {
-            state.selectedLog = log;
-            state.editMode = false;
-            updateUI();
-        }
-
-        // Render log detail
-        function renderLogDetail(log) {
-            const visibilityClass = log.type === 'public' ? 'public' : 'private';
-            const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-            const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
-            
-            let html = `
-                <div class="log-detail-header">
-                    <h2 class="log-detail-title">${log.title}</h2>
-                    <div class="log-detail-meta">
-                        <span class="log-detail-date">REF: ${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="log-content">
-                    ${log.content}
-                </div>
-            `;
-            
-            // Add image if log has one
-            if (log.hasImage) {
-                html += `
-                    <div class="log-image">
-                        <div class="image-placeholder">
-                            <span>[IMAGE PLACEHOLDER]</span>
-                            <span class="image-placeholder-caption">${log.imageCaption}</span>
-                        </div>
-                    </div>
-                `;
-            }
-
-            // Add edit button if authenticated
-            if (state.authenticated) {
-                html += `
-                    <div class="edit-actions" style="margin-top: 16px;">
-                        <button id="delete-log-btn" class="cancel-btn">
-                            <i class="fas fa-trash"></i>
-                            DELETE
-                        </button>
-                        <button id="edit-log-btn" class="edit-btn">
-                            <i class="fas fa-edit"></i>
-                            EDIT
-                        </button>
-                    </div>
-                `;
-            }
-            
-            elements.logDetail.innerHTML = html;
-
-            // Add event listeners to the buttons if authenticated
-            if (state.authenticated) {
-                document.getElementById('edit-log-btn').addEventListener('click', () => {
-                    editLog(log);
-                });
-                document.getElementById('delete-log-btn').addEventListener('click', () => {
-                    deleteLog(log);
-                });
-            }
-        }
-
-        // Show new log form
-        function showNewLogForm() {
-            elements.newLogForm.style.display = 'block';
-            document.getElementById('new-log-title').value = '';
-            document.getElementById('new-log-date').value = '';
-            document.getElementById('new-log-preview').value = '';
-            document.getElementById('new-log-type').value = 'public';
-            document.getElementById('new-log-content').value = '';
-            document.getElementById('new-log-has-image').checked = false;
-            document.getElementById('new-log-image-caption').value = '';
-            document.getElementById('new-log-image-caption-group').style.display = 'none';
-        }
-
-        // Hide new log form
-        function hideNewLogForm() {
-            elements.newLogForm.style.display = 'none';
-        }
-
-        // Toggle new log image caption
-        function toggleNewLogImageCaption() {
-            const hasImage = document.getElementById('new-log-has-image').checked;
-            document.getElementById('new-log-image-caption-group').style.display = hasImage ? 'block' : 'none';
-        }
-
-        // Toggle edit image caption
-        function toggleEditImageCaption() {
-            const hasImage = document.getElementById('edit-has-image').checked;
-            document.getElementById('edit-image-caption-group').style.display = hasImage ? 'block' : 'none';
-        }
-
-        // Save new log
-        function saveNewLog() {
-            const title = document.getElementById('new-log-title').value;
-            const date = document.getElementById('new-log-date').value;
-            const preview = document.getElementById('new-log-preview').value;
-            const type = document.getElementById('new-log-type').value;
-            const content = document.getElementById('new-log-content').value;
-            const hasImage = document.getElementById('new-log-has-image').checked;
-            const imageCaption = document.getElementById('new-log-image-caption').value;
-
-            // Simple validation
-            if (!title || !date || !preview || !content) {
-                alert('Please fill out all required fields.');
-                return;
-            }
-
-            // Create new log
-            const newLog = {
-                id: state.nextId++,
-                title,
-                date,
-                preview,
-                type,
-                content,
-                hasImage,
-                imageCaption: hasImage ? imageCaption : ''
-            };
-
-            // Add to appropriate array
-            if (type === 'public') {
-                state.logs.public.push(newLog);
-            } else {
-                state.logs.private.push(newLog);
-            }
-
-            // Save to localStorage
-            saveLogs();
-
-            // Hide form and update UI
-            hideNewLogForm();
-            state.selectedLog = newLog;
-            updateUI();
-        }
-
-        // Edit log
-        function editLog(log) {
-            state.editMode = true;
-            updateUI();
-        }
-
-        // Populate edit form
-        function populateEditForm(log) {
-            document.getElementById('edit-title').value = log.title;
-            document.getElementById('edit-date').value = log.date;
-            document.getElementById('edit-preview').value = log.preview;
-            document.getElementById('edit-type').value = log.type;
-            document.getElementById('edit-content').value = log.content;
-            document.getElementById('edit-has-image').checked = log.hasImage;
-            document.getElementById('edit-image-caption').value = log.imageCaption || '';
-            document.getElementById('edit-image-caption-group').style.display = log.hasImage ? 'block' : 'none';
-        }
-
-        // Cancel edit
-        function cancelEdit() {
-            state.editMode = false;
-            updateUI();
-        }
-
-        // Save edit
-        function saveEdit() {
-            const title = document.getElementById('edit-title').value;
-            const date = document.getElementById('edit-date').value;
-            const preview = document.getElementById('edit-preview').value;
-            const type = document.getElementById('edit-type').value;
-            const content = document.getElementById('edit-content').value;
-            const hasImage = document.getElementById('edit-has-image').checked;
-            const imageCaption = document.getElementById('edit-image-caption').value;
-
-            // Simple validation
-            if (!title || !date || !preview || !content) {
-                alert('Please fill out all required fields.');
-                return;
-            }
-
-            // Find the log to update
-            const logToUpdate = state.selectedLog;
-            const oldType = logToUpdate.type;
-
-            // Update log
-            logToUpdate.title = title;
-            logToUpdate.date = date;
-            logToUpdate.preview = preview;
-            logToUpdate.type = type;
-            logToUpdate.content = content;
-            logToUpdate.hasImage = hasImage;
-            logToUpdate.imageCaption = hasImage ? imageCaption : '';
-
-            // If type changed, move the log to the appropriate array
-            if (oldType !== type) {
-                // Remove from old array
-                if (oldType === 'public') {
-                    state.logs.public = state.logs.public.filter(log => log.id !== logToUpdate.id);
-                } else {
-                    state.logs.private = state.logs.private.filter(log => log.id !== logToUpdate.id);
-                }
-
-                // Add to new array
-                if (type === 'public') {
-                    state.logs.public.push(logToUpdate);
-                } else {
-                    state.logs.private.push(logToUpdate);
-                }
-            }
-
-            // Save to localStorage
-            saveLogs();
-
-            // Exit edit mode and update UI
-            state.editMode = false;
-            updateUI();
-        }
-
-        // Delete log
-        function deleteLog(log) {
-            if (confirm('Are you sure you want to delete this log? This action cannot be undone.')) {
-                // Remove from appropriate array
-                if (log.type === 'public') {
-                    state.logs.public = state.logs.public.filter(l => l.id !== log.id);
-                } else {
-                    state.logs.private = state.logs.private.filter(l => l.id !== log.id);
-                }
-
-                // Save to localStorage
-                saveLogs();
-
-                // Reset selected log and update UI
-                state.selectedLog = null;
-                updateUI();
-            }
-        }
-
-        // Save logs to localStorage
-        function saveLogs() {
-            localStorage.setItem('davosLogs', JSON.stringify(state.logs));
-        }
-
-        // Export logs
-        function exportLogs() {
-            const logsJson = JSON.stringify(state.logs, null, 2);
-            const blob = new Blob([logsJson], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'davos_logs_' + new Date().toISOString().split('T')[0] + '.json';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        // Show import modal
-        function showImportModal() {
-            elements.importModal.style.display = 'flex';
-        }
-
-        // Hide import modal
-        function hideImportModal() {
-            elements.importModal.style.display = 'none';
-        }
-
-        // Import logs
-        function importLogs() {
-            const fileInput = document.getElementById('import-file');
-            const file = fileInput.files[0];
-            
-            if (!file) {
-                alert('Please select a file to import.');
-                return;
-            }
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedLogs = JSON.parse(e.target.result);
-                    
-                    // Validate structure
-                    if (!importedLogs.public || !importedLogs.private) {
-                        throw new Error('Invalid log format. The file must contain "public" and "private" arrays.');
-                    }
-                    
-                    // Find highest ID to continue from
-                    let highestId = 0;
-                    [...importedLogs.public, ...importedLogs.private].forEach(log => {
-                        if (log.id > highestId) {
-                            highestId = log.id;
-                        }
-                    });
-                    
-                    // Update state
-                    state.logs = importedLogs;
-                    state.nextId = highestId + 1;
-                    
-                    // Save to localStorage
-                    saveLogs();
-                    
-                    // Update UI
-                    state.selectedLog = null;
-                    hideImportModal();
-                    updateUI();
-                    
-                    alert('Logs imported successfully.');
-                } catch (error) {
-                    alert('Error importing logs: ' + error.message);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        // Boot sequence
-        function runBootSequence() {
-            setTimeout(() => {
-                elements.bootScreen.style.opacity = '0';
-                elements.bootScreen.style.transition = 'opacity 1s';
-                
-                setTimeout(() => {
-                    elements.bootScreen.style.display = 'none';
-                    
-                    // Check for existing session
-                    checkSession();
-                    
-                    // Initialize UI
-                    updateUI();
-                }, 1000);
-            }, 2500);
-        }
-
-        // Start boot sequence
-        runBootSequence();
                 },
                 {
                     id: 5,
@@ -1415,3 +578,241 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     type: 'private',
                     content: 'At 0347 hours, deep space monitoring station Tango-9 detected an encrypted transmission originating from the unexplored region of sector 7. Signal pattern does not match any known human communication protocols.\n\nPreliminary linguistic analysis suggests an organized structure indicating intelligent origin, but translation efforts have been unsuccessful. The transmission lasted 73 seconds and has not repeated.\n\nOf particular concern is that the signal appears to have been directed specifically at Davos Heavy Industries research vessel "Horizon Seeker," which was conducting routine exploration approximately 4.3 light years from the signal origin.\n\nRecommend immediate recall of all vessels in the vicinity and establishment of a quarantine zone around sector 7 pending further investigation.',
                     hasImage: false
+                }
+            ]
+        };
+
+        // Authentication settings
+        const users = {
+            'admin': 'mothership', // In a real implementation, you'd use hashed passwords
+            'gamemaster': 'deepspace',
+            'player': 'android'
+        };
+
+        // Application state
+        let state = {
+            authenticated: false,
+            username: '',
+            visibleLogs: [],
+            selectedLog: null
+        };
+
+        // DOM Elements
+        const elements = {
+            bootScreen: document.getElementById('boot-screen'),
+            appContainer: document.getElementById('app-container'),
+            securityLevel: document.getElementById('security-level'),
+            loginForm: document.getElementById('login-form'),
+            loginError: document.getElementById('login-error'),
+            logoutBtn: document.getElementById('logout-btn'),
+            securityWarning: document.getElementById('security-warning'),
+            logList: document.getElementById('log-list'),
+            logDetail: document.getElementById('log-detail'),
+            welcomeMessage: document.getElementById('welcome-message'),
+            userStatus: document.getElementById('user-status')
+        };
+
+        // Event Listeners
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+
+        // Handle login
+        function handleLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (users[username] && users[username] === password) {
+                state.authenticated = true;
+                state.username = username;
+                
+                // Save session to localStorage
+                localStorage.setItem('davosSession', JSON.stringify({
+                    username: username,
+                    timestamp: new Date().getTime()
+                }));
+                
+                elements.loginError.style.display = 'none';
+                updateUI();
+            } else {
+                elements.loginError.textContent = 'ACCESS DENIED: Invalid credentials';
+                elements.loginError.style.display = 'block';
+            }
+        }
+
+        // Handle logout
+        function handleLogout() {
+            state.authenticated = false;
+            state.username = '';
+            state.selectedLog = null;
+            
+            // Clear session
+            localStorage.removeItem('davosSession');
+            
+            updateUI();
+        }
+
+        // Update UI based on state
+        function updateUI() {
+            // Update visible logs
+            state.visibleLogs = logs.public.slice(); // Copy public logs
+            
+            if (state.authenticated) {
+                state.visibleLogs = state.visibleLogs.concat(logs.private); // Add private logs
+                
+                // Update security indicators
+                elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
+                elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
+                
+                // Show logout button, hide login form
+                elements.loginForm.style.display = 'none';
+                elements.logoutBtn.style.display = 'inline-flex';
+                
+                // Hide security warning
+                elements.securityWarning.style.display = 'none';
+            } else {
+                // Update security indicators
+                elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
+                elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
+                
+                // Show login form, hide logout button
+                elements.loginForm.style.display = 'block';
+                elements.logoutBtn.style.display = 'none';
+                
+                // Show security warning
+                elements.securityWarning.style.display = 'block';
+            }
+            
+            // Clear fields
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+            
+            // Render logs
+            renderLogs();
+            
+            // Render selected log or welcome message
+            if (state.selectedLog) {
+                renderLogDetail(state.selectedLog);
+                elements.welcomeMessage.style.display = 'none';
+                elements.logDetail.style.display = 'block';
+            } else {
+                elements.welcomeMessage.style.display = 'flex';
+                elements.logDetail.style.display = 'none';
+            }
+        }
+
+        // Render log list
+        function renderLogs() {
+            // Sort logs by date (newest first)
+            const sortedLogs = state.visibleLogs.sort((a, b) => {
+                return b.date.localeCompare(a.date);
+            });
+            
+            elements.logList.innerHTML = '';
+            
+            sortedLogs.forEach(log => {
+                const logElement = document.createElement('div');
+                logElement.className = `log-entry ${state.selectedLog?.id === log.id ? 'selected' : ''}`;
+                logElement.dataset.id = log.id;
+                
+                const visibilityClass = log.type === 'public' ? 'public' : 'private';
+                const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
+                const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+                
+                logElement.innerHTML = `
+                    <div class="log-header">
+                        <span class="log-date">${log.date}</span>
+                        <span class="log-visibility ${visibilityClass}">
+                            <i class="fas ${visibilityIcon}"></i>
+                            <span>${visibilityText}</span>
+                        </span>
+                    </div>
+                    <h3 class="log-title">${log.title}</h3>
+                    <p class="log-preview">${log.preview}</p>
+                `;
+                
+                logElement.addEventListener('click', () => {
+                    selectLog(log);
+                });
+                
+                elements.logList.appendChild(logElement);
+            });
+        }
+
+        // Select a log
+        function selectLog(log) {
+            state.selectedLog = log;
+            updateUI();
+        }
+
+        // Render log detail
+        function renderLogDetail(log) {
+            const visibilityClass = log.type === 'public' ? 'public' : 'private';
+            const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
+            const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+            
+            let html = `
+                <div class="log-detail-header">
+                    <h2 class="log-detail-title">${log.title}</h2>
+                    <div class="log-detail-meta">
+                        <span class="log-detail-date">REF: ${log.date}</span>
+                        <span class="log-visibility ${visibilityClass}">
+                            <i class="fas ${visibilityIcon}"></i>
+                            <span>${visibilityText}</span>
+                        </span>
+                    </div>
+                </div>
+                <div class="log-content">
+                    ${log.content}
+                </div>
+            `;
+            
+            // Add image if log has one
+            if (log.hasImage) {
+                html += `
+                    <div class="log-image">
+                        <div class="image-placeholder">
+                            <span>[IMAGE PLACEHOLDER]</span>
+                            <span class="image-placeholder-caption">${log.imageCaption}</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            elements.logDetail.innerHTML = html;
+        }
+
+        // Boot sequence - SIMPLIFIED VERSION
+        function runBootSequence() {
+            // Shorter boot sequence
+            setTimeout(() => {
+                // Hide boot screen, show app
+                elements.bootScreen.style.display = 'none';
+                elements.appContainer.style.display = 'flex';
+                
+                // Check for existing session
+                checkSession();
+                
+                // Initialize UI
+                updateUI();
+            }, 2500); // Just wait 2.5 seconds then show the app
+        }
+
+        // Check for existing session
+        function checkSession() {
+            const savedSession = localStorage.getItem('davosSession');
+            if (savedSession) {
+                const session = JSON.parse(savedSession);
+                if (session.username && users[session.username]) {
+                    state.authenticated = true;
+                    state.username = session.username;
+                }
+            }
+        }
+
+        // Start boot sequence
+        document.addEventListener('DOMContentLoaded', function() {
+            runBootSequence();
+        });
+    </script>
+</body>
+</html>

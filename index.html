@@ -153,6 +153,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            margin-bottom: 8px;
         }
         
         button i {
@@ -163,7 +164,37 @@
             border-color: var(--accent2);
             color: var(--accent2);
         }
-        
+
+        button.edit-btn {
+            border-color: var(--accent3);
+            color: var(--accent3);
+        }
+
+        button.cancel-btn {
+            border-color: var(--accent2);
+            color: var(--accent2);
+            margin-right: 8px;
+        }
+
+        button.save-btn {
+            border-color: var(--accent1);
+            color: var(--accent1);
+        }
+
+        /* Admin tools */
+        .admin-tools {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .admin-tools h3 {
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
         /* Log entries */
         .log-list {
             flex: 1;
@@ -332,6 +363,63 @@
             color: var(--accent2);
             border-radius: 4px;
         }
+
+        /* Edit form */
+        .edit-form {
+            display: none;
+        }
+
+        .edit-form .form-group {
+            margin-bottom: 16px;
+        }
+
+        .edit-form label {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .edit-form input[type="text"],
+        .edit-form select,
+        .edit-form textarea {
+            width: 100%;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            color: var(--accent1);
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            border-radius: 4px;
+        }
+
+        .edit-form textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .edit-form .checkbox-group {
+            display: flex;
+            align-items: center;
+        }
+
+        .edit-form .checkbox-group input[type="checkbox"] {
+            margin-right: 8px;
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+        }
+
+        .edit-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+
+        /* New log form */
+        .new-log-form {
+            background-color: var(--terminal);
+            padding: 16px;
+            border-radius: 4px;
+            display: none;
+            margin-bottom: 16px;
+        }
         
         /* Footer */
         .footer {
@@ -410,6 +498,55 @@
             50% { opacity: 1; }
             100% { opacity: 0.9; }
         }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: var(--background);
+            border: 1px solid var(--darkAccent);
+            border-radius: 4px;
+            padding: 24px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--darkAccent);
+        }
+
+        .modal-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--accent2);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -476,6 +613,69 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     </button>
                 </div>
                 
+                <!-- Admin tools (visible when authenticated) -->
+                <div id="admin-tools" class="admin-tools">
+                    <h3>ADMIN CONTROLS</h3>
+                    <button id="new-log-btn">
+                        <i class="fas fa-plus"></i>
+                        NEW MISSION LOG
+                    </button>
+                    <button id="export-logs-btn">
+                        <i class="fas fa-download"></i>
+                        EXPORT ALL LOGS
+                    </button>
+                    <button id="import-logs-btn">
+                        <i class="fas fa-upload"></i>
+                        IMPORT LOGS
+                    </button>
+                </div>
+
+                <!-- New log form -->
+                <div id="new-log-form" class="new-log-form">
+                    <h3>CREATE NEW LOG</h3>
+                    <div class="form-group">
+                        <label for="new-log-title">TITLE</label>
+                        <input type="text" id="new-log-title" placeholder="Enter log title">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-log-date">DATE</label>
+                        <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-log-preview">PREVIEW</label>
+                        <input type="text" id="new-log-preview" placeholder="Brief description">
+                    </div>
+                    <div class="form-group">
+                        <label for="new-log-type">TYPE</label>
+                        <select id="new-log-type">
+                            <option value="public">PUBLIC</option>
+                            <option value="private">CLASSIFIED</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="new-log-content">CONTENT</label>
+                        <textarea id="new-log-content" placeholder="Enter log content"></textarea>
+                    </div>
+                    <div class="form-group checkbox-group">
+                        <input type="checkbox" id="new-log-has-image">
+                        <label for="new-log-has-image">INCLUDE IMAGE</label>
+                    </div>
+                    <div class="form-group" id="new-log-image-caption-group" style="display: none;">
+                        <label for="new-log-image-caption">IMAGE CAPTION</label>
+                        <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
+                    </div>
+                    <div class="edit-actions">
+                        <button id="cancel-new-log-btn" class="cancel-btn">
+                            <i class="fas fa-times"></i>
+                            CANCEL
+                        </button>
+                        <button id="save-new-log-btn" class="save-btn">
+                            <i class="fas fa-save"></i>
+                            SAVE
+                        </button>
+                    </div>
+                </div>
+                
                 <!-- Log entries list -->
                 <div id="log-list" class="log-list">
                     <!-- Logs will be populated by JavaScript -->
@@ -485,8 +685,54 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             <!-- Main content area -->
             <div class="main-content">
                 <div class="content-container">
-                    <div id="log-detail">
+                    <!-- View log detail -->
+                    <div id="log-detail" style="display: none;">
                         <!-- Log details will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Edit log form -->
+                    <div id="edit-form" class="edit-form">
+                        <div class="form-group">
+                            <label for="edit-title">TITLE</label>
+                            <input type="text" id="edit-title">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-date">DATE</label>
+                            <input type="text" id="edit-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-preview">PREVIEW</label>
+                            <input type="text" id="edit-preview">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-type">TYPE</label>
+                            <select id="edit-type">
+                                <option value="public">PUBLIC</option>
+                                <option value="private">CLASSIFIED</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-content">CONTENT</label>
+                            <textarea id="edit-content"></textarea>
+                        </div>
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="edit-has-image">
+                            <label for="edit-has-image">INCLUDE IMAGE</label>
+                        </div>
+                        <div class="form-group" id="edit-image-caption-group">
+                            <label for="edit-image-caption">IMAGE CAPTION</label>
+                            <input type="text" id="edit-image-caption">
+                        </div>
+                        <div class="edit-actions">
+                            <button id="cancel-edit-btn" class="cancel-btn">
+                                <i class="fas fa-times"></i>
+                                CANCEL
+                            </button>
+                            <button id="save-edit-btn" class="save-btn">
+                                <i class="fas fa-save"></i>
+                                SAVE
+                            </button>
+                        </div>
                     </div>
                     
                     <!-- Default welcome message -->
@@ -516,9 +762,29 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         </div>
     </div>
 
+    <!-- Import modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">IMPORT LOGS</h3>
+                <button class="close-modal" id="close-import-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="import-file">SELECT JSON FILE</label>
+                <input type="file" id="import-file" accept=".json">
+            </div>
+            <div class="form-group">
+                <button id="import-confirm-btn" class="save-btn">
+                    <i class="fas fa-upload"></i>
+                    IMPORT
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Log data (this would normally be stored in a separate JSON file)
-        const logs = {
+        const initialLogs = {
             public: [
                 {
                     id: 1,
@@ -594,7 +860,10 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             authenticated: false,
             username: '',
             visibleLogs: [],
-            selectedLog: null
+            selectedLog: null,
+            editMode: false,
+            logs: JSON.parse(localStorage.getItem('davosLogs')) || JSON.parse(JSON.stringify(initialLogs)),
+            nextId: 7 // Start IDs after the initial set
         };
 
         // DOM Elements
@@ -605,16 +874,73 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             loginForm: document.getElementById('login-form'),
             loginError: document.getElementById('login-error'),
             logoutBtn: document.getElementById('logout-btn'),
+            adminTools: document.getElementById('admin-tools'),
+            newLogForm: document.getElementById('new-log-form'),
             securityWarning: document.getElementById('security-warning'),
             logList: document.getElementById('log-list'),
             logDetail: document.getElementById('log-detail'),
+            editForm: document.getElementById('edit-form'),
             welcomeMessage: document.getElementById('welcome-message'),
-            userStatus: document.getElementById('user-status')
+            userStatus: document.getElementById('user-status'),
+            importModal: document.getElementById('import-modal')
         };
 
+        // Boot sequence - SIMPLIFIED VERSION
+        function runBootSequence() {
+            // Shorter boot sequence
+            setTimeout(() => {
+                // Hide boot screen, show app
+                elements.bootScreen.style.display = 'none';
+                elements.appContainer.style.display = 'flex';
+                
+                // Check for existing session
+                checkSession();
+                
+                // Initialize UI
+                updateUI();
+            }, 2500); // Just wait 2.5 seconds then show the app
+        }
+
+        // Check for existing session
+        function checkSession() {
+            const savedSession = localStorage.getItem('davosSession');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    if (session.username && users[session.username]) {
+                        state.authenticated = true;
+                        state.username = session.username;
+                    }
+                } catch (e) {
+                    console.error("Error parsing session data:", e);
+                    localStorage.removeItem('davosSession');
+                }
+            }
+        }
+
         // Event Listeners
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.addEventListener('DOMContentLoaded', function() {
+            // Basic listeners
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            
+            // Admin functions
+            document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
+            document.getElementById('cancel-new-log-btn').addEventListener('click', hideNewLogForm);
+            document.getElementById('save-new-log-btn').addEventListener('click', saveNewLog);
+            document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
+            document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
+            document.getElementById('export-logs-btn').addEventListener('click', exportLogs);
+            document.getElementById('import-logs-btn').addEventListener('click', showImportModal);
+            document.getElementById('close-import-modal').addEventListener('click', hideImportModal);
+            document.getElementById('import-confirm-btn').addEventListener('click', importLogs);
+            
+            // Toggle image fields
+            document.getElementById('new-log-has-image').addEventListener('change', toggleNewLogImageCaption);
+            document.getElementById('edit-has-image').addEventListener('change', toggleEditImageCaption);
+            
+            runBootSequence();
+        });
 
         // Handle login
         function handleLogin() {
@@ -644,6 +970,7 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             state.authenticated = false;
             state.username = '';
             state.selectedLog = null;
+            state.editMode = false;
             
             // Clear session
             localStorage.removeItem('davosSession');
@@ -654,18 +981,19 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         // Update UI based on state
         function updateUI() {
             // Update visible logs
-            state.visibleLogs = logs.public.slice(); // Copy public logs
+            state.visibleLogs = state.logs.public.slice(); // Copy public logs
             
             if (state.authenticated) {
-                state.visibleLogs = state.visibleLogs.concat(logs.private); // Add private logs
+                state.visibleLogs = state.visibleLogs.concat(state.logs.private); // Add private logs
                 
                 // Update security indicators
                 elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
                 elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
                 
-                // Show logout button, hide login form
+                // Show logout button, hide login form, show admin tools
                 elements.loginForm.style.display = 'none';
                 elements.logoutBtn.style.display = 'inline-flex';
+                elements.adminTools.style.display = 'block';
                 
                 // Hide security warning
                 elements.securityWarning.style.display = 'none';
@@ -674,9 +1002,11 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                 elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
                 elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
                 
-                // Show login form, hide logout button
+                // Show login form, hide logout button, hide admin tools
                 elements.loginForm.style.display = 'block';
                 elements.logoutBtn.style.display = 'none';
+                elements.adminTools.style.display = 'none';
+                elements.newLogForm.style.display = 'none';
                 
                 // Show security warning
                 elements.securityWarning.style.display = 'block';
@@ -690,13 +1020,20 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             renderLogs();
             
             // Render selected log or welcome message
-            if (state.selectedLog) {
+            if (state.selectedLog && !state.editMode) {
                 renderLogDetail(state.selectedLog);
                 elements.welcomeMessage.style.display = 'none';
                 elements.logDetail.style.display = 'block';
+                elements.editForm.style.display = 'none';
+            } else if (state.editMode && state.selectedLog) {
+                populateEditForm(state.selectedLog);
+                elements.welcomeMessage.style.display = 'none';
+                elements.logDetail.style.display = 'none';
+                elements.editForm.style.display = 'block';
             } else {
                 elements.welcomeMessage.style.display = 'flex';
                 elements.logDetail.style.display = 'none';
+                elements.editForm.style.display = 'none';
             }
         }
 
@@ -711,7 +1048,7 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
             
             sortedLogs.forEach(log => {
                 const logElement = document.createElement('div');
-                logElement.className = `log-entry ${state.selectedLog?.id === log.id ? 'selected' : ''}`;
+                logElement.className = `log-entry ${state.selectedLog && state.selectedLog.id === log.id ? 'selected' : ''}`;
                 logElement.dataset.id = log.id;
                 
                 const visibilityClass = log.type === 'public' ? 'public' : 'private';
@@ -741,6 +1078,7 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
         // Select a log
         function selectLog(log) {
             state.selectedLog = log;
+            state.editMode = false;
             updateUI();
         }
 
@@ -777,42 +1115,284 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                     </div>
                 `;
             }
+
+            // Add edit/delete buttons if authenticated
+            if (state.authenticated) {
+                html += `
+                    <div class="edit-actions" style="margin-top: 16px;">
+                        <button id="delete-log-btn" class="cancel-btn">
+                            <i class="fas fa-trash"></i>
+                            DELETE
+                        </button>
+                        <button id="edit-log-btn" class="edit-btn">
+                            <i class="fas fa-edit"></i>
+                            EDIT
+                        </button>
+                    </div>
+                `;
+            }
             
             elements.logDetail.innerHTML = html;
-        }
 
-        // Boot sequence - SIMPLIFIED VERSION
-        function runBootSequence() {
-            // Shorter boot sequence
-            setTimeout(() => {
-                // Hide boot screen, show app
-                elements.bootScreen.style.display = 'none';
-                elements.appContainer.style.display = 'flex';
-                
-                // Check for existing session
-                checkSession();
-                
-                // Initialize UI
-                updateUI();
-            }, 2500); // Just wait 2.5 seconds then show the app
-        }
-
-        // Check for existing session
-        function checkSession() {
-            const savedSession = localStorage.getItem('davosSession');
-            if (savedSession) {
-                const session = JSON.parse(savedSession);
-                if (session.username && users[session.username]) {
-                    state.authenticated = true;
-                    state.username = session.username;
-                }
+            // Add event listeners for edit/delete buttons
+            if (state.authenticated) {
+                document.getElementById('edit-log-btn').addEventListener('click', () => {
+                    editLog(log);
+                });
+                document.getElementById('delete-log-btn').addEventListener('click', () => {
+                    deleteLog(log);
+                });
             }
         }
 
-        // Start boot sequence
-        document.addEventListener('DOMContentLoaded', function() {
-            runBootSequence();
-        });
+        // Show new log form
+        function showNewLogForm() {
+            elements.newLogForm.style.display = 'block';
+            document.getElementById('new-log-title').value = '';
+            document.getElementById('new-log-date').value = '';
+            document.getElementById('new-log-preview').value = '';
+            document.getElementById('new-log-type').value = 'public';
+            document.getElementById('new-log-content').value = '';
+            document.getElementById('new-log-has-image').checked = false;
+            document.getElementById('new-log-image-caption').value = '';
+            document.getElementById('new-log-image-caption-group').style.display = 'none';
+        }
+
+        // Hide new log form
+        function hideNewLogForm() {
+            elements.newLogForm.style.display = 'none';
+        }
+
+        // Toggle new log image caption
+        function toggleNewLogImageCaption() {
+            const hasImage = document.getElementById('new-log-has-image').checked;
+            document.getElementById('new-log-image-caption-group').style.display = hasImage ? 'block' : 'none';
+        }
+
+        // Toggle edit image caption
+        function toggleEditImageCaption() {
+            const hasImage = document.getElementById('edit-has-image').checked;
+            document.getElementById('edit-image-caption-group').style.display = hasImage ? 'block' : 'none';
+        }
+
+        // Save new log
+        function saveNewLog() {
+            const title = document.getElementById('new-log-title').value;
+            const date = document.getElementById('new-log-date').value;
+            const preview = document.getElementById('new-log-preview').value;
+            const type = document.getElementById('new-log-type').value;
+            const content = document.getElementById('new-log-content').value;
+            const hasImage = document.getElementById('new-log-has-image').checked;
+            const imageCaption = document.getElementById('new-log-image-caption').value;
+
+            // Simple validation
+            if (!title || !date || !preview || !content) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+
+            // Create new log
+            const newLog = {
+                id: state.nextId++,
+                title,
+                date,
+                preview,
+                type,
+                content,
+                hasImage,
+                imageCaption: hasImage ? imageCaption : ''
+            };
+
+            // Add to appropriate array
+            if (type === 'public') {
+                state.logs.public.push(newLog);
+            } else {
+                state.logs.private.push(newLog);
+            }
+
+            // Save to localStorage
+            saveLogs();
+
+            // Hide form and update UI
+            hideNewLogForm();
+            state.selectedLog = newLog;
+            updateUI();
+        }
+
+        // Edit log
+        function editLog(log) {
+            state.editMode = true;
+            updateUI();
+        }
+
+        // Populate edit form
+        function populateEditForm(log) {
+            document.getElementById('edit-title').value = log.title;
+            document.getElementById('edit-date').value = log.date;
+            document.getElementById('edit-preview').value = log.preview;
+            document.getElementById('edit-type').value = log.type;
+            document.getElementById('edit-content').value = log.content;
+            document.getElementById('edit-has-image').checked = log.hasImage;
+            document.getElementById('edit-image-caption').value = log.imageCaption || '';
+            document.getElementById('edit-image-caption-group').style.display = log.hasImage ? 'block' : 'none';
+        }
+
+        // Cancel edit
+        function cancelEdit() {
+            state.editMode = false;
+            updateUI();
+        }
+
+        // Save edit
+        function saveEdit() {
+            const title = document.getElementById('edit-title').value;
+            const date = document.getElementById('edit-date').value;
+            const preview = document.getElementById('edit-preview').value;
+            const type = document.getElementById('edit-type').value;
+            const content = document.getElementById('edit-content').value;
+            const hasImage = document.getElementById('edit-has-image').checked;
+            const imageCaption = document.getElementById('edit-image-caption').value;
+
+            // Simple validation
+            if (!title || !date || !preview || !content) {
+                alert('Please fill out all required fields.');
+                return;
+            }
+
+            // Find the log to update
+            const logToUpdate = state.selectedLog;
+            const oldType = logToUpdate.type;
+
+            // Update log
+            logToUpdate.title = title;
+            logToUpdate.date = date;
+            logToUpdate.preview = preview;
+            logToUpdate.type = type;
+            logToUpdate.content = content;
+            logToUpdate.hasImage = hasImage;
+            logToUpdate.imageCaption = hasImage ? imageCaption : '';
+
+            // If type changed, move the log to the appropriate array
+            if (oldType !== type) {
+                // Remove from old array
+                if (oldType === 'public') {
+                    state.logs.public = state.logs.public.filter(log => log.id !== logToUpdate.id);
+                } else {
+                    state.logs.private = state.logs.private.filter(log => log.id !== logToUpdate.id);
+                }
+
+                // Add to new array
+                if (type === 'public') {
+                    state.logs.public.push(logToUpdate);
+                } else {
+                    state.logs.private.push(logToUpdate);
+                }
+            }
+
+            // Save to localStorage
+            saveLogs();
+
+            // Exit edit mode and update UI
+            state.editMode = false;
+            updateUI();
+        }
+
+        // Delete log
+        function deleteLog(log) {
+            if (confirm('Are you sure you want to delete this log? This action cannot be undone.')) {
+                // Remove from appropriate array
+                if (log.type === 'public') {
+                    state.logs.public = state.logs.public.filter(l => l.id !== log.id);
+                } else {
+                    state.logs.private = state.logs.private.filter(l => l.id !== log.id);
+                }
+
+                // Save to localStorage
+                saveLogs();
+
+                // Reset selected log and update UI
+                state.selectedLog = null;
+                updateUI();
+            }
+        }
+
+        // Save logs to localStorage
+        function saveLogs() {
+            localStorage.setItem('davosLogs', JSON.stringify(state.logs));
+        }
+
+        // Export logs
+        function exportLogs() {
+            const logsJson = JSON.stringify(state.logs, null, 2);
+            const blob = new Blob([logsJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'davos_logs_' + new Date().toISOString().split('T')[0] + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Show import modal
+        function showImportModal() {
+            elements.importModal.style.display = 'flex';
+        }
+
+        // Hide import modal
+        function hideImportModal() {
+            elements.importModal.style.display = 'none';
+        }
+
+        // Import logs
+        function importLogs() {
+            const fileInput = document.getElementById('import-file');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select a file to import.');
+                return;
+            }
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedLogs = JSON.parse(e.target.result);
+                    
+                    // Validate structure
+                    if (!importedLogs.public || !importedLogs.private) {
+                        throw new Error('Invalid log format. The file must contain "public" and "private" arrays.');
+                    }
+                    
+                    // Find highest ID to continue from
+                    let highestId = 0;
+                    [...importedLogs.public, ...importedLogs.private].forEach(log => {
+                        if (log.id > highestId) {
+                            highestId = log.id;
+                        }
+                    });
+                    
+                    // Update state
+                    state.logs = importedLogs;
+                    state.nextId = highestId + 1;
+                    
+                    // Save to localStorage
+                    saveLogs();
+                    
+                    // Update UI
+                    state.selectedLog = null;
+                    hideImportModal();
+                    updateUI();
+                    
+                    alert('Logs imported successfully.');
+                } catch (error) {
+                    alert('Error importing logs: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
     </script>
 </body>
 </html>

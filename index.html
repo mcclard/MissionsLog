@@ -472,12 +472,16 @@
         <!-- Sidebar -->
         <div class="sidebar">
             <div id="login-section">
-                <div id="login-form" class="login-form">
-                    <h3>SECURE LOGIN</h3>
-                    <div class="login-instructions">
-                        <p>BIOMETRIC VERIFICATION REQUIRED</p>
-                        <p>SELECT THE CORRECT PATTERN SEQUENCE TO GAIN ACCESS</p>
-                    </div>
+            <div id="login-form" class="login-form">
+    <h3>SECURE LOGIN</h3>
+    <p>Please select your access level:</p>
+    <div style="display: flex; gap: 10px; margin: 20px 0;">
+        <button onclick="handleDirectLogin('admin')" style="flex: 1;">ADMIN</button>
+        <button onclick="handleDirectLogin('gamemaster')" style="flex: 1;">GAMEMASTER</button>
+        <button onclick="handleDirectLogin('player')" style="flex: 1;">PLAYER</button>
+    </div>
+    <div id="login-error" style="color: #ff0055; display: none;"></div>
+</div>
                     
                     <div class="access-level">
                         <span>ACCESS LEVEL:</span>

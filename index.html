@@ -5,34 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Davos Heavy Industries Mission Log</title>
     <style>
-        .title-link:hover {
-    opacity: 0.8;
-    cursor: pointer;
-}
-        /* Scrollbar styling */
-.personnel-details::-webkit-scrollbar {
-    width: 8px;
-}
-
-.personnel-details::-webkit-scrollbar-track {
-    background: #001100;
-    border-radius: 4px;
-}
-
-.personnel-details::-webkit-scrollbar-thumb {
-    background: #004400;
-    border-radius: 4px;
-}
-
-.personnel-details::-webkit-scrollbar-thumb:hover {
-    background: #006600;
-}
-
-/* For Firefox */
-.personnel-details {
-    scrollbar-width: thin;
-    scrollbar-color: #004400 #001100;
-}
         body {
             font-family: 'Courier New', monospace;
             background-color: #0a0a0a;
@@ -76,7 +48,7 @@
         
         button.delete {
             border-color: #ff0055;
-            color: #cc0000;
+            color: #ff0055;
         }
         
         .login-form, .admin-tools, .log-form {
@@ -220,21 +192,136 @@
             max-height: 80px;
             overflow-y: auto;
         }
+        
+        /* Scrollbar styling */
+        .personnel-details::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .personnel-details::-webkit-scrollbar-track {
+            background: #001100;
+            border-radius: 4px;
+        }
+
+        .personnel-details::-webkit-scrollbar-thumb {
+            background: #004400;
+            border-radius: 4px;
+        }
+
+        .personnel-details::-webkit-scrollbar-thumb:hover {
+            background: #006600;
+        }
+
+        /* For Firefox */
+        .personnel-details {
+            scrollbar-width: thin;
+            scrollbar-color: #004400 #001100;
+        }
+        
+        /* Title link hover effect */
+        .title-link:hover {
+            opacity: 0.8;
+            cursor: pointer;
+        }
+
+        /* CRT screen effect */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+
+        /* Scanline effect */
+        .scanline {
+            position: absolute;
+            width: 100%;
+            height: 4px;
+            background: rgba(0, 255, 65, 0.15);
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+            opacity: 0.75;
+            z-index: 101;
+            animation: scanline 8s linear infinite;
+        }
+
+        /* Screen flicker */
+        .flicker {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: rgba(0, 20, 0, 0);
+            z-index: 102;
+            animation: flicker 0.3s infinite;
+            opacity: 0.03;
+        }
+
+        /* CRT screen glow */
+        .crt-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-shadow: inset 0 0 200px rgba(0, 80, 0, 0.15);
+            z-index: 99;
+            pointer-events: none;
+        }
+
+        /* Subtle scanline texture */
+        .scanlines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(0, 255, 65, 0.03) 51%
+            );
+            background-size: 100% 4px;
+            z-index: 98;
+            pointer-events: none;
+        }
+
+        /* Animations */
+        @keyframes scanline {
+            0% {
+                top: -5%;
+            }
+            100% {
+                top: 105%;
+            }
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.03; }
+            50% { opacity: 0.02; }
+            100% { opacity: 0.03; }
+        }
     </style>
 </head>
 <body>
-<a href="index.html" style="text-decoration: none; color: inherit; display: block;">
-  <pre style="font-family: monospace; color: #00ff41; text-align: center; margin: 20px 0 0 0; line-height: 1.2; font-size: 16px;">
+    <!-- DAVOS ASCII art title as hyperlink -->
+    <a href="index.html" class="title-link" style="text-decoration: none; color: inherit; display: block;">
+        <pre style="font-family: monospace; color: #00ff41; text-align: center; margin: 20px 0 0 0; line-height: 1.2; font-size: 16px;">
 ██████╗  █████╗ ██╗   ██╗ ██████╗ ███████╗
 ██╔══██╗██╔══██╗██║   ██║██╔═══██╗██╔════╝
 ██║  ██║███████║██║   ██║██║   ██║███████╗
 ██║  ██║██╔══██║╚██╗ ██╔╝██║   ██║╚════██║
 ██████╔╝██║  ██║ ╚████╔╝ ╚██████╔╝███████║
 ╚═════╝ ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚══════╝
-  </pre>
-  <h3 style="text-align: center; margin: 5px 0 20px 0; color: #00ff41; font-family: 'Courier New', monospace; font-size: 14px;">DAVOS HEAVY INDUSTRIES MISSION DATA CORE</h3>
-</a>
-   
+        </pre>
+        <h3 style="text-align: center; margin: 5px 0 20px 0; color: #00ff41; font-family: 'Courier New', monospace; font-size: 14px;">HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE</h3>
+    </a>
+    
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
@@ -255,6 +342,7 @@
                 <button id="new-log-btn">NEW MISSION LOG</button>
                 <button id="export-btn">EXPORT LOGS</button>
                 <button id="import-btn">IMPORT LOGS</button>
+                <button id="toggle-crt-btn">TOGGLE CRT EFFECT</button>
                 <button id="logout-btn">LOGOUT</button>
                 <input type="file" id="import-file" accept=".json" style="display: none;">
             </div>
@@ -350,6 +438,14 @@
         </div>
     </div>
 
+    <!-- CRT screen effect overlay -->
+    <div class="crt-overlay">
+        <div class="scanline"></div>
+        <div class="flicker"></div>
+        <div class="crt-glow"></div>
+        <div class="scanlines"></div>
+    </div>
+
     <script>
         // Initial log data
         const initialLogs = {
@@ -423,6 +519,25 @@
                             details: 'Systems Technician. Access level 3. Suspected of unauthorized network activity.'
                         }
                     ]
+                },
+                {
+                    id: 8,
+                    title: 'SUBJECT PROFILE: Dr. Elena Voss',
+                    date: '2385.03.01',
+                    preview: 'Former lead researcher reported missing with classified research data.',
+                    type: 'public',
+                    content: 'SUBJECT: Dr. Elena Voss\nPOSITION: Former Lead Researcher, Davos Bioweapons Division\nSTATUS: MISSING\n\nDr. Voss disappeared three days before the New Horizon incident with classified research data. She is implicated in unauthorized experiments on human subjects. Psychological profile indicates growing paranoia and ethical conflicts.\n\nHer last communication referenced "breakthrough" and "terrible mistake." Security clearance has been revoked posthumously. Shoot on sight orders have been issued by Director Kaine.\n\nAny sightings or information regarding Dr. Voss\'s whereabouts must be reported immediately to Central Command.',
+                    hasImage: true,
+                    imageUrl: 'https://images.unsplash.com/photo-1553514029-1318c9127859?q=80&w=150',
+                    imageCaption: 'Last known image of Dr. Voss',
+                    personnel: [
+                        {
+                            name: 'Dr. Elena Voss',
+                            imageUrl: 'https://images.unsplash.com/photo-1553514029-1318c9127859?q=80&w=150',
+                            status: 'MISSING',
+                            details: 'Former lead researcher at Davos Bioweapons Division. Disappeared three days before the New Horizon incident with classified research data. Implicated in unauthorized experiments on human subjects.'
+                        }
+                    ]
                 }
             ],
             private: [
@@ -494,7 +609,7 @@
             selectedLog: null,
             editMode: false,
             logs: JSON.parse(localStorage.getItem('davosLogs')) || JSON.parse(JSON.stringify(initialLogs)),
-            nextId: 8 // Start IDs after the initial set
+            nextId: 9 // Start IDs after the initial set
         };
 
         // DOM Elements
@@ -512,7 +627,8 @@
             logDetail: document.getElementById('log-detail'),
             welcomeMessage: document.getElementById('welcome-message'),
             editForm: document.getElementById('edit-form'),
-            importFile: document.getElementById('import-file')
+            importFile: document.getElementById('import-file'),
+            crtOverlay: document.querySelector('.crt-overlay')
         };
 
         // Function to create a personnel form
@@ -578,32 +694,52 @@
         }
 
         // Add event listeners
-        document.getElementById('login-btn').addEventListener('click', handleLogin);
-        document.getElementById('logout-btn').addEventListener('click', handleLogout);
-        document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
-        document.getElementById('cancel-new-log').addEventListener('click', hideNewLogForm);
-        document.getElementById('save-new-log').addEventListener('click', saveNewLog);
-        document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
-        document.getElementById('save-edit').addEventListener('click', saveEdit);
-        document.getElementById('export-btn').addEventListener('click', exportLogs);
-        document.getElementById('import-btn').addEventListener('click', () => elements.importFile.click());
-        document.getElementById('import-file').addEventListener('change', importLogs);
-        document.getElementById('new-has-image').addEventListener('change', toggleNewImageSection);
-        document.getElementById('edit-has-image').addEventListener('change', toggleEditImageSection);
-        document.getElementById('add-personnel-btn').addEventListener('click', function() {
-            const container = document.getElementById('new-personnel-list');
-            const index = container.querySelectorAll('.personnel-form').length;
-            createPersonnelForm('new-personnel-list', index);
-        });
-        document.getElementById('edit-add-personnel-btn').addEventListener('click', function() {
-            const container = document.getElementById('edit-personnel-list');
-            const index = container.querySelectorAll('.personnel-form').length;
-            createPersonnelForm('edit-personnel-list', index);
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('login-btn').addEventListener('click', handleLogin);
+            document.getElementById('logout-btn').addEventListener('click', handleLogout);
+            document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
+            document.getElementById('cancel-new-log').addEventListener('click', hideNewLogForm);
+            document.getElementById('save-new-log').addEventListener('click', saveNewLog);
+            document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
+            document.getElementById('save-edit').addEventListener('click', saveEdit);
+            document.getElementById('export-btn').addEventListener('click', exportLogs);
+            document.getElementById('import-btn').addEventListener('click', () => elements.importFile.click());
+            document.getElementById('import-file').addEventListener('change', importLogs);
+            document.getElementById('new-has-image').addEventListener('change', toggleNewImageSection);
+            document.getElementById('edit-has-image').addEventListener('change', toggleEditImageSection);
+            document.getElementById('add-personnel-btn').addEventListener('click', function() {
+                const container = document.getElementById('new-personnel-list');
+                const index = container.querySelectorAll('.personnel-form').length;
+                createPersonnelForm('new-personnel-list', index);
+            });
+            document.getElementById('edit-add-personnel-btn').addEventListener('click', function() {
+                const container = document.getElementById('edit-personnel-list');
+                const index = container.querySelectorAll('.personnel-form').length;
+                createPersonnelForm('edit-personnel-list', index);
+            });
+            document.getElementById('toggle-crt-btn').addEventListener('click', toggleCrtEffect);
+
+            // Check saved CRT effect preference
+            const savedCrtPreference = localStorage.getItem('crtEffect');
+            if (savedCrtPreference === 'disabled') {
+                elements.crtOverlay.style.display = 'none';
+            }
+            
+            // Check for existing session
+            checkSession();
+            updateUI();
         });
 
-        // Check for existing session
-        checkSession();
-        updateUI();
+        // Toggle CRT effect
+        function toggleCrtEffect() {
+            if (elements.crtOverlay.style.display === 'none') {
+                elements.crtOverlay.style.display = 'block';
+                localStorage.setItem('crtEffect', 'enabled');
+            } else {
+                elements.crtOverlay.style.display = 'none';
+                localStorage.setItem('crtEffect', 'disabled');
+            }
+        }
 
         // Handle login
         function handleLogin() {
@@ -677,13 +813,16 @@
             if (state.selectedLog && !state.editMode) {
                 renderLogDetail(state.selectedLog);
                 elements.welcomeMessage.style.display = 'none';
+                elements.logDetail.style.display = 'block';
                 elements.editForm.style.display = 'none';
             } else if (state.editMode && state.selectedLog) {
                 populateEditForm(state.selectedLog);
                 elements.welcomeMessage.style.display = 'none';
+                elements.logDetail.style.display = 'none';
                 elements.editForm.style.display = 'block';
             } else {
                 elements.welcomeMessage.style.display = 'block';
+                elements.logDetail.style.display = 'none';
                 elements.editForm.style.display = 'none';
             }
         }

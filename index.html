@@ -1,61 +1,4 @@
-<div class="welcome-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
-                        <h3 class="welcome-title">MISSION DATA CORE</h3>
-                        <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
-                        <div id="security-warning" class="security-warning">
-                            <p>WARNING: Some mission logs require security clearance.</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Footer with status -->
-                <div class="footer">
-                    <div class="system-status">
-                        <div class="status-indicator"></div>
-                        <span>SYSTEM OPERATIONAL</span>
-                    </div>
-                    <div id="user-status" class="user-status">
-                        <span>PUBLIC ACCESS MODE</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import modal -->
-    <div id="import-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">IMPORT LOGS</h3>
-                <button class="close-modal" id="close-import-modal">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="import-file">SELECT JSON FILE</label>
-                <input type="file" id="import-file" accept=".json">
-            </div>
-            <div class="form-group">
-                <button id="import-confirm-btn" class="save-btn">
-                    <i class="fas fa-upload"></i>
-                    IMPORT
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Log data (this would normally be stored in a separate JSON file)
-        const initialLogs = {
-            public: [
-                {
-                    id: 1,
-                    title: 'MISSION REPORT: Derelict Vessel "Chronos"',
-                    date: '2385.03.15',
-                    preview: 'Team encountered unknown biological entities in cargo hold B. Three casualties reported.',
-                    type: 'public',
-                    content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
-                    hasImage: true,
-                    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000',
+imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000',
                     imageCaption: 'Chronos Vessel Exterior Scan',
                     imageSize: 'medium',
                     imageAlign: 'center'
@@ -155,8 +98,6 @@
 
         // DOM Elements
         const elements = {
-            bootScreen: document.getElementById('boot-screen'),
-            appContainer: document.getElementById('app-container'),
             securityLevel: document.getElementById('security-level'),
             loginForm: document.getElementById('login-form'),
             loginError: document.getElementById('login-error'),
@@ -176,20 +117,16 @@
             importModal: document.getElementById('import-modal')
         };
 
-        // Boot sequence - SIMPLIFIED VERSION
-        function runBootSequence() {
-            // Shorter boot sequence
-            setTimeout(() => {
-                // Hide boot screen, show app
-                elements.bootScreen.style.display = 'none';
-                elements.appContainer.style.display = 'flex';
-                
-                // Check for existing session
-                checkSession();
-                
-                // Initialize UI
-                updateUI();
-            }, 2500); // Just wait 2.5 seconds then show the app
+        // Initialize the application
+        function initializeApp() {
+            // Check for existing session
+            checkSession();
+            
+            // Setup event listeners
+            setupEventListeners();
+            
+            // Initial UI update
+            updateUI();
         }
 
         // Check for existing session
@@ -209,8 +146,8 @@
             }
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', function() {
+        // Setup event listeners
+        function setupEventListeners() {
             // Basic listeners
             document.getElementById('login-btn').addEventListener('click', handleLogin);
             document.getElementById('logout-btn').addEventListener('click', handleLogout);
@@ -271,9 +208,7 @@
                     state.editImageAlign = this.dataset.align;
                 });
             });
-            
-            runBootSequence();
-        });
+        }
 
         // Handle login
         function handleLogin() {
@@ -846,6 +781,9 @@
             };
             reader.readAsText(file);
         }
+
+        // Initialize the application when the DOM is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html><!DOCTYPE html>
@@ -878,15 +816,11 @@
             background-color: var(--background);
             color: var(--accent1);
             line-height: 1.6;
-        }
-        
-        #app-container {
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
         }
-
+        
         /* Grid background */
         .grid-background {
             position: absolute;
@@ -1386,50 +1320,11 @@
             margin-right: 6px;
         }
         
-        /* Boot animation */
-        .boot-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--background);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .boot-logo {
-            font-size: 3em;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-        
-        .ascii-logo {
-            font-family: monospace;
-            white-space: pre;
-            text-align: center;
-            margin-bottom: 20px;
-            animation: flicker 0.5s infinite;
-        }
-        
-        .boot-message {
-            font-size: 1em;
-        }
-        
         /* Animations */
         @keyframes pulse {
             0% { opacity: 0.6; }
             50% { opacity: 1; }
             100% { opacity: 0.6; }
-        }
-        
-        @keyframes flicker {
-            0% { opacity: 0.9; }
-            50% { opacity: 1; }
-            100% { opacity: 0.9; }
         }
 
         /* Modal */
@@ -1530,135 +1425,210 @@
     </style>
 </head>
 <body>
-    <!-- Boot screen -->
-    <div id="boot-screen" class="boot-screen">
-        <div class="boot-logo">
-            <i class="fas fa-power-off"></i>
-        </div>
-        <div class="ascii-logo">
-██████╗  █████╗ ██╗   ██╗ ██████╗ ███████╗
-██╔══██╗██╔══██╗██║   ██║██╔═══██╗██╔════╝
-██║  ██║███████║██║   ██║██║   ██║███████╗
-██║  ██║██╔══██║╚██╗ ██╔╝██║   ██║╚════██║
-██████╔╝██║  ██║ ╚████╔╝ ╚██████╔╝███████║
-╚═════╝ ╚═╝  ╚═╝  ╚═══╝   ╚═════╝ ╚══════╝
-                                          
-HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
-        </div>
-        <div class="boot-message">SYSTEM BOOT SEQUENCE INITIATED...</div>
-    </div>
+    <!-- Grid background -->
+    <div class="grid-background"></div>
 
-    <!-- Main App Container -->
-    <div id="app-container" style="display: none;">
-        <!-- Grid background -->
-        <div class="grid-background"></div>
+    <!-- Header -->
+    <header>
+        <div class="header-title">
+            <i class="fas fa-desktop"></i>
+            <span>DAVOS HEAVY INDUSTRIES</span>
+        </div>
+        <div class="security-indicator">
+            <i class="fas fa-shield-alt"></i>
+            <span id="security-level">SECURITY LEVEL: PUBLIC</span>
+            <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
+                <i class="fas fa-lock"></i>
+                LOGOUT
+            </button>
+        </div>
+    </header>
 
-        <!-- Header -->
-        <header>
-            <div class="header-title">
-                <i class="fas fa-desktop"></i>
-                <span>DAVOS HEAVY INDUSTRIES</span>
-            </div>
-            <div class="security-indicator">
-                <i class="fas fa-shield-alt"></i>
-                <span id="security-level">SECURITY LEVEL: PUBLIC</span>
-                <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
+    <!-- Main container -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <h2>MISSION LOGS</h2>
+            
+            <!-- Login form (visible when not authenticated) -->
+            <div id="login-form" class="login-form">
+                <h3>SECURE LOGIN</h3>
+                <div class="form-group">
+                    <label for="username">USER ID</label>
+                    <input type="text" id="username" placeholder="Enter user ID">
+                </div>
+                <div class="form-group">
+                    <label for="password">PASSKEY</label>
+                    <input type="password" id="password" placeholder="Enter passkey">
+                </div>
+                <div id="login-error" class="login-error" style="display: none;"></div>
+                <button id="login-btn">
                     <i class="fas fa-lock"></i>
-                    LOGOUT
+                    ACCESS
                 </button>
             </div>
-        </header>
+            
+            <!-- Admin tools (visible when authenticated) -->
+            <div id="admin-tools" class="admin-tools">
+                <h3>ADMIN CONTROLS</h3>
+                <button id="new-log-btn">
+                    <i class="fas fa-plus"></i>
+                    NEW MISSION LOG
+                </button>
+                <button id="export-logs-btn">
+                    <i class="fas fa-download"></i>
+                    EXPORT ALL LOGS
+                </button>
+                <button id="import-logs-btn">
+                    <i class="fas fa-upload"></i>
+                    IMPORT LOGS
+                </button>
+            </div>
 
-        <!-- Main container -->
-        <div class="container">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <h2>MISSION LOGS</h2>
-                
-                <!-- Login form (visible when not authenticated) -->
-                <div id="login-form" class="login-form">
-                    <h3>SECURE LOGIN</h3>
+            <!-- New log form -->
+            <div id="new-log-form" class="new-log-form">
+                <h3>CREATE NEW LOG</h3>
+                <div class="form-group">
+                    <label for="new-log-title">TITLE</label>
+                    <input type="text" id="new-log-title" placeholder="Enter log title">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-date">DATE</label>
+                    <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-preview">PREVIEW</label>
+                    <input type="text" id="new-log-preview" placeholder="Brief description">
+                </div>
+                <div class="form-group">
+                    <label for="new-log-type">TYPE</label>
+                    <select id="new-log-type">
+                        <option value="public">PUBLIC</option>
+                        <option value="private">CLASSIFIED</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="new-log-content">CONTENT</label>
+                    <textarea id="new-log-content" placeholder="Enter log content"></textarea>
+                </div>
+                <div class="form-group checkbox-group">
+                    <input type="checkbox" id="new-log-has-image">
+                    <label for="new-log-has-image">INCLUDE IMAGE</label>
+                </div>
+                <div id="new-log-image-options" style="display: none;">
                     <div class="form-group">
-                        <label for="username">USER ID</label>
-                        <input type="text" id="username" placeholder="Enter user ID">
+                        <label for="new-log-image-url">IMAGE URL</label>
+                        <input type="url" id="new-log-image-url" placeholder="https://example.com/image.jpg">
+                        <button id="new-log-preview-image" class="preview-btn">
+                            <i class="fas fa-eye"></i>
+                            PREVIEW IMAGE
+                        </button>
+                        <div id="new-log-image-preview" class="image-preview">
+                            <img id="new-log-image-preview-img">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="password">PASSKEY</label>
-                        <input type="password" id="password" placeholder="Enter passkey">
+                        <label for="new-log-image-caption">IMAGE CAPTION</label>
+                        <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
                     </div>
-                    <div id="login-error" class="login-error" style="display: none;"></div>
-                    <button id="login-btn">
-                        <i class="fas fa-lock"></i>
-                        ACCESS
+                    <div class="form-group">
+                        <label>IMAGE SIZE</label>
+                        <div class="image-size-options">
+                            <div class="size-option" data-size="small">SMALL</div>
+                            <div class="size-option active" data-size="medium">MEDIUM</div>
+                            <div class="size-option" data-size="large">LARGE</div>
+                            <div class="size-option" data-size="full">FULL WIDTH</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>IMAGE ALIGNMENT</label>
+                        <div class="image-alignment-options">
+                            <div class="align-option" data-align="left">
+                                <i class="fas fa-align-left"></i> LEFT
+                            </div>
+                            <div class="align-option active" data-align="center">
+                                <i class="fas fa-align-center"></i> CENTER
+                            </div>
+                            <div class="align-option" data-align="right">
+                                <i class="fas fa-align-right"></i> RIGHT
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="edit-actions">
+                    <button id="cancel-new-log-btn" class="cancel-btn">
+                        <i class="fas fa-times"></i>
+                        CANCEL
+                    </button>
+                    <button id="save-new-log-btn" class="save-btn">
+                        <i class="fas fa-save"></i>
+                        SAVE
                     </button>
                 </div>
-                
-                <!-- Admin tools (visible when authenticated) -->
-                <div id="admin-tools" class="admin-tools">
-                    <h3>ADMIN CONTROLS</h3>
-                    <button id="new-log-btn">
-                        <i class="fas fa-plus"></i>
-                        NEW MISSION LOG
-                    </button>
-                    <button id="export-logs-btn">
-                        <i class="fas fa-download"></i>
-                        EXPORT ALL LOGS
-                    </button>
-                    <button id="import-logs-btn">
-                        <i class="fas fa-upload"></i>
-                        IMPORT LOGS
-                    </button>
+            </div>
+            
+            <!-- Log entries list -->
+            <div id="log-list" class="log-list">
+                <!-- Logs will be populated by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="main-content">
+            <div class="content-container">
+                <!-- View log detail -->
+                <div id="log-detail" style="display: none;">
+                    <!-- Log details will be populated by JavaScript -->
                 </div>
 
-                <!-- New log form -->
-                <div id="new-log-form" class="new-log-form">
-                    <h3>CREATE NEW LOG</h3>
+                <!-- Edit log form -->
+                <div id="edit-form" class="edit-form">
                     <div class="form-group">
-                        <label for="new-log-title">TITLE</label>
-                        <input type="text" id="new-log-title" placeholder="Enter log title">
+                        <label for="edit-title">TITLE</label>
+                        <input type="text" id="edit-title">
                     </div>
                     <div class="form-group">
-                        <label for="new-log-date">DATE</label>
-                        <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
+                        <label for="edit-date">DATE</label>
+                        <input type="text" id="edit-date">
                     </div>
                     <div class="form-group">
-                        <label for="new-log-preview">PREVIEW</label>
-                        <input type="text" id="new-log-preview" placeholder="Brief description">
+                        <label for="edit-preview">PREVIEW</label>
+                        <input type="text" id="edit-preview">
                     </div>
                     <div class="form-group">
-                        <label for="new-log-type">TYPE</label>
-                        <select id="new-log-type">
+                        <label for="edit-type">TYPE</label>
+                        <select id="edit-type">
                             <option value="public">PUBLIC</option>
                             <option value="private">CLASSIFIED</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="new-log-content">CONTENT</label>
-                        <textarea id="new-log-content" placeholder="Enter log content"></textarea>
+                        <label for="edit-content">CONTENT</label>
+                        <textarea id="edit-content"></textarea>
                     </div>
                     <div class="form-group checkbox-group">
-                        <input type="checkbox" id="new-log-has-image">
-                        <label for="new-log-has-image">INCLUDE IMAGE</label>
+                        <input type="checkbox" id="edit-has-image">
+                        <label for="edit-has-image">INCLUDE IMAGE</label>
                     </div>
-                    <div id="new-log-image-options" style="display: none;">
+                    <div id="edit-image-options" style="display: none;">
                         <div class="form-group">
-                            <label for="new-log-image-url">IMAGE URL</label>
-                            <input type="url" id="new-log-image-url" placeholder="https://example.com/image.jpg">
-                            <button id="new-log-preview-image" class="preview-btn">
+                            <label for="edit-image-url">IMAGE URL</label>
+                            <input type="url" id="edit-image-url" placeholder="https://example.com/image.jpg">
+                            <button id="edit-preview-image" class="preview-btn">
                                 <i class="fas fa-eye"></i>
                                 PREVIEW IMAGE
                             </button>
-                            <div id="new-log-image-preview" class="image-preview">
-                                <img id="new-log-image-preview-img">
+                            <div id="edit-image-preview" class="image-preview">
+                                <img id="edit-image-preview-img">
                             </div>
                         </div>
                         <div class="form-group">
-                            <label for="new-log-image-caption">IMAGE CAPTION</label>
-                            <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
+                            <label for="edit-image-caption">IMAGE CAPTION</label>
+                            <input type="text" id="edit-image-caption">
                         </div>
                         <div class="form-group">
                             <label>IMAGE SIZE</label>
-                            <div class="image-size-options">
+                            <div class="image-size-options" id="edit-image-size-options">
                                 <div class="size-option" data-size="small">SMALL</div>
                                 <div class="size-option active" data-size="medium">MEDIUM</div>
                                 <div class="size-option" data-size="large">LARGE</div>
@@ -1667,7 +1637,7 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                         </div>
                         <div class="form-group">
                             <label>IMAGE ALIGNMENT</label>
-                            <div class="image-alignment-options">
+                            <div class="image-alignment-options" id="edit-image-alignment-options">
                                 <div class="align-option" data-align="left">
                                     <i class="fas fa-align-left"></i> LEFT
                                 </div>
@@ -1681,114 +1651,73 @@ HEAVY INDUSTRIES CLASSIFIED MISSION DATA CORE
                         </div>
                     </div>
                     <div class="edit-actions">
-                        <button id="cancel-new-log-btn" class="cancel-btn">
+                        <button id="cancel-edit-btn" class="cancel-btn">
                             <i class="fas fa-times"></i>
                             CANCEL
                         </button>
-                        <button id="save-new-log-btn" class="save-btn">
+                        <button id="save-edit-btn" class="save-btn">
                             <i class="fas fa-save"></i>
                             SAVE
                         </button>
                     </div>
                 </div>
                 
-                <!-- Log entries list -->
-                <div id="log-list" class="log-list">
-                    <!-- Logs will be populated by JavaScript -->
+                <!-- Default welcome message -->
+                <div id="welcome-message" class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3 class="welcome-title">MISSION DATA CORE</h3>
+                    <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
+                    <div id="security-warning" class="security-warning">
+                        <p>WARNING: Some mission logs require security clearance.</p>
+                    </div>
                 </div>
             </div>
             
-            <!-- Main content area -->
-            <div class="main-content">
-                <div class="content-container">
-                    <!-- View log detail -->
-                    <div id="log-detail" style="display: none;">
-                        <!-- Log details will be populated by JavaScript -->
-                    </div>
+            <!-- Footer with status -->
+            <div class="footer">
+                <div class="system-status">
+                    <div class="status-indicator"></div>
+                    <span>SYSTEM OPERATIONAL</span>
+                </div>
+                <div id="user-status" class="user-status">
+                    <span>PUBLIC ACCESS MODE</span>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    <!-- Edit log form -->
-                    <div id="edit-form" class="edit-form">
-                        <div class="form-group">
-                            <label for="edit-title">TITLE</label>
-                            <input type="text" id="edit-title">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-date">DATE</label>
-                            <input type="text" id="edit-date">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-preview">PREVIEW</label>
-                            <input type="text" id="edit-preview">
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-type">TYPE</label>
-                            <select id="edit-type">
-                                <option value="public">PUBLIC</option>
-                                <option value="private">CLASSIFIED</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-content">CONTENT</label>
-                            <textarea id="edit-content"></textarea>
-                        </div>
-                        <div class="form-group checkbox-group">
-                            <input type="checkbox" id="edit-has-image">
-                            <label for="edit-has-image">INCLUDE IMAGE</label>
-                        </div>
-                        <div id="edit-image-options" style="display: none;">
-                            <div class="form-group">
-                                <label for="edit-image-url">IMAGE URL</label>
-                                <input type="url" id="edit-image-url" placeholder="https://example.com/image.jpg">
-                                <button id="edit-preview-image" class="preview-btn">
-                                    <i class="fas fa-eye"></i>
-                                    PREVIEW IMAGE
-                                </button>
-                                <div id="edit-image-preview" class="image-preview">
-                                    <img id="edit-image-preview-img">
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="edit-image-caption">IMAGE CAPTION</label>
-                                <input type="text" id="edit-image-caption">
-                            </div>
-                            <div class="form-group">
-                                <label>IMAGE SIZE</label>
-                                <div class="image-size-options" id="edit-image-size-options">
-                                    <div class="size-option" data-size="small">SMALL</div>
-                                    <div class="size-option active" data-size="medium">MEDIUM</div>
-                                    <div class="size-option" data-size="large">LARGE</div>
-                                    <div class="size-option" data-size="full">FULL WIDTH</div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>IMAGE ALIGNMENT</label>
-                                <div class="image-alignment-options" id="edit-image-alignment-options">
-                                    <div class="align-option" data-align="left">
-                                        <i class="fas fa-align-left"></i> LEFT
-                                    </div>
-                                    <div class="align-option active" data-align="center">
-                                        <i class="fas fa-align-center"></i> CENTER
-                                    </div>
-                                    <div class="align-option" data-align="right">
-                                        <i class="fas fa-align-right"></i> RIGHT
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="edit-actions">
-                            <button id="cancel-edit-btn" class="cancel-btn">
-                                <i class="fas fa-times"></i>
-                                CANCEL
-                            </button>
-                            <button id="save-edit-btn" class="save-btn">
-                                <i class="fas fa-save"></i>
-                                SAVE
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Default welcome message -->
-                    <div id="welcome-message" class="welcome-message">
-                        <div class="welcome-icon">
-                            <i class="fas fa-file-alt"></i>
-                        </div>
+    <!-- Import modal -->
+    <div id="import-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">IMPORT LOGS</h3>
+                <button class="close-modal" id="close-import-modal">&times;</button>
+            </div>
+            <div class="form-group">
+                <label for="import-file">SELECT JSON FILE</label>
+                <input type="file" id="import-file" accept=".json">
+            </div>
+            <div class="form-group">
+                <button id="import-confirm-btn" class="save-btn">
+                    <i class="fas fa-upload"></i>
+                    IMPORT
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Log data (this would normally be stored in a separate JSON file)
+        const initialLogs = {
+            public: [
+                {
+                    id: 1,
+                    title: 'MISSION REPORT: Derelict Vessel "Chronos"',
+                    date: '2385.03.15',
+                    preview: 'Team encountered unknown biological entities in cargo hold B. Three casualties reported.',
+                    type: 'public',
+                    content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
+                    hasImage: true,
+                    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80

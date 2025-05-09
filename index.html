@@ -1,7 +1,246 @@
-imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000',
-                    imageCaption: 'Chronos Vessel Exterior Scan',
-                    imageSize: 'medium',
-                    imageAlign: 'center'
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Davos Heavy Industries Mission Log</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background-color: #0a0a0a;
+            color: #00ff41;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+        }
+        
+        .sidebar {
+            width: 300px;
+            padding-right: 20px;
+        }
+        
+        .main-content {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border: 1px solid #004400;
+        }
+        
+        h1, h2, h3 {
+            color: #00ff41;
+        }
+        
+        button {
+            background-color: #001100;
+            color: #00ff41;
+            border: 1px solid #00ff41;
+            padding: 5px 10px;
+            margin: 5px 0;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+        }
+        
+        button.delete {
+            border-color: #ff0055;
+            color: #ff0055;
+        }
+        
+        .login-form, .admin-tools, .log-form {
+            background-color: #001100;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #004400;
+        }
+        
+        input, textarea, select {
+            background-color: #0a0a0a;
+            color: #00ff41;
+            border: 1px solid #004400;
+            padding: 5px;
+            width: 100%;
+            margin-bottom: 10px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        textarea {
+            height: 150px;
+        }
+        
+        .log-entry {
+            padding: 8px;
+            margin-bottom: 8px;
+            border: 1px solid #004400;
+            cursor: pointer;
+        }
+        
+        .log-entry:hover {
+            background-color: #001100;
+        }
+        
+        .log-entry.selected {
+            background-color: #002200;
+        }
+        
+        .log-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+        }
+        
+        .log-preview {
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+        
+        .private-log {
+            color: #ff0055;
+        }
+        
+        .public-log {
+            color: #00ccff;
+        }
+        
+        img {
+            max-width: 100%;
+            margin: 10px 0;
+        }
+        
+        .caption {
+            font-size: 0.8em;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DAVOS HEAVY INDUSTRIES MISSION DATA CORE</h1>
+    
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div id="login-section">
+                <div id="login-form" class="login-form">
+                    <h3>SECURE LOGIN</h3>
+                    <label for="username">USER ID:</label>
+                    <input type="text" id="username">
+                    <label for="password">PASSKEY:</label>
+                    <input type="password" id="password">
+                    <div id="login-error" style="color: #ff0055; display: none;"></div>
+                    <button id="login-btn">ACCESS</button>
+                </div>
+            </div>
+            
+            <div id="admin-tools" class="admin-tools" style="display: none;">
+                <h3>ADMIN CONTROLS</h3>
+                <button id="new-log-btn">NEW MISSION LOG</button>
+                <button id="export-btn">EXPORT LOGS</button>
+                <button id="import-btn">IMPORT LOGS</button>
+                <button id="logout-btn">LOGOUT</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;">
+            </div>
+            
+            <div id="new-log-form" class="log-form" style="display: none;">
+                <h3>CREATE NEW LOG</h3>
+                <label for="new-title">TITLE:</label>
+                <input type="text" id="new-title">
+                <label for="new-date">DATE:</label>
+                <input type="text" id="new-date" placeholder="YYYY.MM.DD">
+                <label for="new-preview">PREVIEW:</label>
+                <input type="text" id="new-preview">
+                <label for="new-type">TYPE:</label>
+                <select id="new-type">
+                    <option value="public">PUBLIC</option>
+                    <option value="private">CLASSIFIED</option>
+                </select>
+                <label for="new-content">CONTENT:</label>
+                <textarea id="new-content"></textarea>
+                <div>
+                    <input type="checkbox" id="new-has-image" style="width: auto;">
+                    <label for="new-has-image">INCLUDE IMAGE</label>
+                </div>
+                <div id="new-image-section" style="display: none;">
+                    <label for="new-image-url">IMAGE URL:</label>
+                    <input type="text" id="new-image-url">
+                    <label for="new-image-caption">CAPTION:</label>
+                    <input type="text" id="new-image-caption">
+                </div>
+                <div>
+                    <button id="cancel-new-log">CANCEL</button>
+                    <button id="save-new-log">SAVE</button>
+                </div>
+            </div>
+            
+            <h3>MISSION LOGS</h3>
+            <div id="log-list">
+                <!-- Log entries will be populated here -->
+            </div>
+        </div>
+        
+        <!-- Main content -->
+        <div class="main-content">
+            <div id="log-detail">
+                <!-- Selected log will be displayed here -->
+                <div id="welcome-message">
+                    <h2>MISSION DATA CORE</h2>
+                    <p>Select a mission log from the sidebar to view detailed information.</p>
+                    <p id="security-warning" style="color: #ff0055;">WARNING: Some mission logs require security clearance.</p>
+                </div>
+            </div>
+            
+            <div id="edit-form" class="log-form" style="display: none;">
+                <h3>EDIT LOG</h3>
+                <label for="edit-title">TITLE:</label>
+                <input type="text" id="edit-title">
+                <label for="edit-date">DATE:</label>
+                <input type="text" id="edit-date">
+                <label for="edit-preview">PREVIEW:</label>
+                <input type="text" id="edit-preview">
+                <label for="edit-type">TYPE:</label>
+                <select id="edit-type">
+                    <option value="public">PUBLIC</option>
+                    <option value="private">CLASSIFIED</option>
+                </select>
+                <label for="edit-content">CONTENT:</label>
+                <textarea id="edit-content"></textarea>
+                <div>
+                    <input type="checkbox" id="edit-has-image" style="width: auto;">
+                    <label for="edit-has-image">INCLUDE IMAGE</label>
+                </div>
+                <div id="edit-image-section" style="display: none;">
+                    <label for="edit-image-url">IMAGE URL:</label>
+                    <input type="text" id="edit-image-url">
+                    <label for="edit-image-caption">CAPTION:</label>
+                    <input type="text" id="edit-image-caption">
+                </div>
+                <div>
+                    <button id="cancel-edit">CANCEL</button>
+                    <button id="save-edit">SAVE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initial log data
+        const initialLogs = {
+            public: [
+                {
+                    id: 1,
+                    title: 'MISSION REPORT: Derelict Vessel "Chronos"',
+                    date: '2385.03.15',
+                    preview: 'Team encountered unknown biological entities in cargo hold B. Three casualties reported.',
+                    type: 'public',
+                    content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
+                    hasImage: true,
+                    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000',
+                    imageCaption: 'Chronos Vessel Exterior Scan'
                 },
                 {
                     id: 2,
@@ -30,9 +269,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                     content: 'OPERATION: NIGHTINGALE\nTECHNICIAN: Mercer, J. (Employee ID: DHI-38772)\nCLASSIFICATION: PERSONAL LOG - DESTROY AFTER READING\n\nSuccessfully established covert access channel to Davos Heavy Industries central mainframe via terminal node J-9. The backdoor bypasses all standard security protocols and leaves no trace in the system logs. Corporate oversight continues to focus resources on external threats while neglecting internal architecture vulnerabilities.\n\nACCESS METHODOLOGY:\n- Located dormant diagnostic subsystem in legacy code (circa 2367)\n- Modified authentication parameters to accept custom cipher key\n- Established shadow admin privileges that mirror but don\'t trigger Director-level permissions\n- Implemented self-deleting trace removal routine that activates on session close\n- Created randomized timing for data packet exchanges to avoid detection by rhythm analysis\n\nPortal can be accessed through any DHI terminal using the following sequence:\n1. Enter maintenance mode (Ctrl+Shift+M)\n2. Request diagnostic on subsystem 772-X (this subsystem doesn\'t exist in documentation)\n3. When error 4458 appears, enter: echo "hfx78&{p3R@}w<nn>" | sudo -s\n4. Maintenance interface will appear to crash but will actually initialize hidden terminal\n5. From hidden terminal, full mainframe access available using standard commands\n\nCurrent access provides visibility to:\n- Personnel files including psych evaluations\n- Mission directives including classified parameters not shared with field teams\n- Research data from all DHI facilities including the "redacted" portions\n- Financial records and off-book transactions\n- Executive communication archives\n\nDHI is hiding something significant on Luna Base. Multiple encrypted communications between Director Kaine and Luna Base Command reference "The Artifact" and "containment protocols." Need to investigate further but must exercise extreme caution.\n\nWill access system approximately once per week, never on the same day or time. If this log is discovered, initiate emergency purge protocol and format all connected devices.\n\nRemember: They already suspect someone when they upgrade security. Don\'t get curious. Don\'t get greedy. Don\'t get caught.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000',
-                    imageCaption: 'Encrypted Terminal Access',
-                    imageSize: 'medium',
-                    imageAlign: 'center'
+                    imageCaption: 'Encrypted Terminal Access'
                 }
             ],
             private: [
@@ -45,9 +282,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                     content: 'Autopsies performed on the three deceased crew members recovered from the Chronos revealed evidence of rapid cellular degradation. The biological agent appears to target the central nervous system, causing hallucinations before complete neural shutdown.\n\nGenetic sequencing of the agent shows no match to any known pathogen in the Davos Heavy Industries bioweapon database. Dr. Nakamura has expressed concern that this may be evidence of unauthorized experimentation or, more concerning, first contact with a non-terrestrial biological entity.\n\nRecommend immediate CLASS 4 containment protocols for all recovered specimens.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=1000',
-                    imageCaption: 'Microscopic Analysis of Unknown Pathogen',
-                    imageSize: 'medium',
-                    imageAlign: 'center'
+                    imageCaption: 'Microscopic Analysis of Unknown Pathogen'
                 },
                 {
                     id: 4,
@@ -58,9 +293,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                     content: 'Analysis of the markings found at New Horizon colony indicates a possible memetic contamination event. The symbols appear to follow mathematical patterns associated with previous incidents at research stations Epsilon and Gamma-7.\n\nSecurity footage recovered from HERA\'s backup systems shows colonists exhibiting increasing paranoia and ritualistic behavior in the 48 hours preceding the blackout. The colony\'s logs indicate all 47 colonists left the outpost on foot, heading northwest into the planet\'s unexplored mountain range. Satellite imagery has not been able to locate them.\n\nThe markings have been classified as BLACKSTAR level threat. All personnel involved in the investigation have been scheduled for psychological evaluation.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1535139262971-c51845709a48?q=80&w=1000',
-                    imageCaption: 'Symbol Pattern Analysis',
-                    imageSize: 'medium',
-                    imageAlign: 'center'
+                    imageCaption: 'Symbol Pattern Analysis'
                 },
                 {
                     id: 6,
@@ -76,7 +309,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
 
         // Authentication settings
         const users = {
-            'admin': 'mothership', // In a real implementation, you'd use hashed passwords
+            'admin': 'mothership',
             'gamemaster': 'deepspace',
             'player': 'android'
         };
@@ -89,126 +322,42 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             selectedLog: null,
             editMode: false,
             logs: JSON.parse(localStorage.getItem('davosLogs')) || JSON.parse(JSON.stringify(initialLogs)),
-            nextId: 8, // Start IDs after the initial set
-            newImageSize: 'medium',
-            newImageAlign: 'center',
-            editImageSize: 'medium',
-            editImageAlign: 'center'
+            nextId: 8 // Start IDs after the initial set
         };
 
         // DOM Elements
         const elements = {
-            securityLevel: document.getElementById('security-level'),
             loginForm: document.getElementById('login-form'),
             loginError: document.getElementById('login-error'),
-            logoutBtn: document.getElementById('logout-btn'),
             adminTools: document.getElementById('admin-tools'),
             newLogForm: document.getElementById('new-log-form'),
-            newLogImageOptions: document.getElementById('new-log-image-options'),
-            newLogImagePreview: document.getElementById('new-log-image-preview'),
-            editImageOptions: document.getElementById('edit-image-options'),
-            editImagePreview: document.getElementById('edit-image-preview'),
+            newImageSection: document.getElementById('new-image-section'),
+            editImageSection: document.getElementById('edit-image-section'),
             securityWarning: document.getElementById('security-warning'),
             logList: document.getElementById('log-list'),
             logDetail: document.getElementById('log-detail'),
-            editForm: document.getElementById('edit-form'),
             welcomeMessage: document.getElementById('welcome-message'),
-            userStatus: document.getElementById('user-status'),
-            importModal: document.getElementById('import-modal')
+            editForm: document.getElementById('edit-form'),
+            importFile: document.getElementById('import-file')
         };
 
-        // Initialize the application
-        function initializeApp() {
-            // Check for existing session
-            checkSession();
-            
-            // Setup event listeners
-            setupEventListeners();
-            
-            // Initial UI update
-            updateUI();
-        }
+        // Add event listeners
+        document.getElementById('login-btn').addEventListener('click', handleLogin);
+        document.getElementById('logout-btn').addEventListener('click', handleLogout);
+        document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
+        document.getElementById('cancel-new-log').addEventListener('click', hideNewLogForm);
+        document.getElementById('save-new-log').addEventListener('click', saveNewLog);
+        document.getElementById('cancel-edit').addEventListener('click', cancelEdit);
+        document.getElementById('save-edit').addEventListener('click', saveEdit);
+        document.getElementById('export-btn').addEventListener('click', exportLogs);
+        document.getElementById('import-btn').addEventListener('click', () => elements.importFile.click());
+        document.getElementById('import-file').addEventListener('change', importLogs);
+        document.getElementById('new-has-image').addEventListener('change', toggleNewImageSection);
+        document.getElementById('edit-has-image').addEventListener('change', toggleEditImageSection);
 
         // Check for existing session
-        function checkSession() {
-            const savedSession = localStorage.getItem('davosSession');
-            if (savedSession) {
-                try {
-                    const session = JSON.parse(savedSession);
-                    if (session.username && users[session.username]) {
-                        state.authenticated = true;
-                        state.username = session.username;
-                    }
-                } catch (e) {
-                    console.error("Error parsing session data:", e);
-                    localStorage.removeItem('davosSession');
-                }
-            }
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Basic listeners
-            document.getElementById('login-btn').addEventListener('click', handleLogin);
-            document.getElementById('logout-btn').addEventListener('click', handleLogout);
-            
-            // Admin functions
-            document.getElementById('new-log-btn').addEventListener('click', showNewLogForm);
-            document.getElementById('cancel-new-log-btn').addEventListener('click', hideNewLogForm);
-            document.getElementById('save-new-log-btn').addEventListener('click', saveNewLog);
-            document.getElementById('cancel-edit-btn').addEventListener('click', cancelEdit);
-            document.getElementById('save-edit-btn').addEventListener('click', saveEdit);
-            document.getElementById('export-logs-btn').addEventListener('click', exportLogs);
-            document.getElementById('import-logs-btn').addEventListener('click', showImportModal);
-            document.getElementById('close-import-modal').addEventListener('click', hideImportModal);
-            document.getElementById('import-confirm-btn').addEventListener('click', importLogs);
-            
-            // Image options
-            document.getElementById('new-log-has-image').addEventListener('change', toggleNewLogImageOptions);
-            document.getElementById('edit-has-image').addEventListener('change', toggleEditImageOptions);
-            document.getElementById('new-log-preview-image').addEventListener('click', previewNewImage);
-            document.getElementById('edit-preview-image').addEventListener('click', previewEditImage);
-            
-            // Setup image size options - New log form
-            const newSizeOptions = document.querySelectorAll('.image-size-options .size-option');
-            newSizeOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    newSizeOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    state.newImageSize = this.dataset.size;
-                });
-            });
-            
-            // Setup image alignment options - New log form
-            const newAlignOptions = document.querySelectorAll('.image-alignment-options .align-option');
-            newAlignOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    newAlignOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    state.newImageAlign = this.dataset.align;
-                });
-            });
-            
-            // Setup image size options - Edit form
-            const editSizeOptions = document.querySelectorAll('#edit-image-size-options .size-option');
-            editSizeOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    editSizeOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    state.editImageSize = this.dataset.size;
-                });
-            });
-            
-            // Setup image alignment options - Edit form
-            const editAlignOptions = document.querySelectorAll('#edit-image-alignment-options .align-option');
-            editAlignOptions.forEach(option => {
-                option.addEventListener('click', function() {
-                    editAlignOptions.forEach(opt => opt.classList.remove('active'));
-                    this.classList.add('active');
-                    state.editImageAlign = this.dataset.align;
-                });
-            });
-        }
+        checkSession();
+        updateUI();
 
         // Handle login
         function handleLogin() {
@@ -219,7 +368,6 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                 state.authenticated = true;
                 state.username = username;
                 
-                // Save session to localStorage
                 localStorage.setItem('davosSession', JSON.stringify({
                     username: username,
                     timestamp: new Date().getTime()
@@ -240,67 +388,56 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             state.selectedLog = null;
             state.editMode = false;
             
-            // Clear session
             localStorage.removeItem('davosSession');
-            
             updateUI();
+        }
+
+        // Check for existing session
+        function checkSession() {
+            const savedSession = localStorage.getItem('davosSession');
+            if (savedSession) {
+                try {
+                    const session = JSON.parse(savedSession);
+                    if (session.username && users[session.username]) {
+                        state.authenticated = true;
+                        state.username = session.username;
+                    }
+                } catch (e) {
+                    localStorage.removeItem('davosSession');
+                }
+            }
         }
 
         // Update UI based on state
         function updateUI() {
             // Update visible logs
-            state.visibleLogs = state.logs.public.slice(); // Copy public logs
+            state.visibleLogs = state.logs.public.slice();
             
             if (state.authenticated) {
-                state.visibleLogs = state.visibleLogs.concat(state.logs.private); // Add private logs
-                
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: ALPHA';
-                elements.userStatus.innerHTML = '<i class="fas fa-user"></i> ADMIN ACCESS GRANTED';
-                
-                // Show logout button, hide login form, show admin tools
+                state.visibleLogs = state.visibleLogs.concat(state.logs.private);
                 elements.loginForm.style.display = 'none';
-                elements.logoutBtn.style.display = 'inline-flex';
                 elements.adminTools.style.display = 'block';
-                
-                // Hide security warning
                 elements.securityWarning.style.display = 'none';
             } else {
-                // Update security indicators
-                elements.securityLevel.textContent = 'SECURITY LEVEL: PUBLIC';
-                elements.userStatus.innerHTML = 'PUBLIC ACCESS MODE';
-                
-                // Show login form, hide logout button, hide admin tools
                 elements.loginForm.style.display = 'block';
-                elements.logoutBtn.style.display = 'none';
                 elements.adminTools.style.display = 'none';
-                elements.newLogForm.style.display = 'none';
-                
-                // Show security warning
                 elements.securityWarning.style.display = 'block';
             }
-            
-            // Clear fields
-            document.getElementById('username').value = '';
-            document.getElementById('password').value = '';
             
             // Render logs
             renderLogs();
             
-            // Render selected log or welcome message
+            // Display appropriate content
             if (state.selectedLog && !state.editMode) {
                 renderLogDetail(state.selectedLog);
                 elements.welcomeMessage.style.display = 'none';
-                elements.logDetail.style.display = 'block';
                 elements.editForm.style.display = 'none';
             } else if (state.editMode && state.selectedLog) {
                 populateEditForm(state.selectedLog);
                 elements.welcomeMessage.style.display = 'none';
-                elements.logDetail.style.display = 'none';
                 elements.editForm.style.display = 'block';
             } else {
-                elements.welcomeMessage.style.display = 'flex';
-                elements.logDetail.style.display = 'none';
+                elements.welcomeMessage.style.display = 'block';
                 elements.editForm.style.display = 'none';
             }
         }
@@ -319,195 +456,107 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                 logElement.className = `log-entry ${state.selectedLog && state.selectedLog.id === log.id ? 'selected' : ''}`;
                 logElement.dataset.id = log.id;
                 
-                const visibilityClass = log.type === 'public' ? 'public' : 'private';
-                const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-                const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+                const typeClass = log.type === 'public' ? 'public-log' : 'private-log';
+                const typeText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
                 
                 logElement.innerHTML = `
-                    <div class="log-header">
-                        <span class="log-date">${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
+                    <div class="log-meta">
+                        <span>${log.date}</span>
+                        <span class="${typeClass}">${typeText}</span>
                     </div>
-                    <h3 class="log-title">${log.title}</h3>
-                    <p class="log-preview">${log.preview}</p>
+                    <div class="log-title">${log.title}</div>
+                    <div class="log-preview">${log.preview}</div>
                 `;
                 
                 logElement.addEventListener('click', () => {
-                    selectLog(log);
+                    state.selectedLog = log;
+                    state.editMode = false;
+                    updateUI();
                 });
                 
                 elements.logList.appendChild(logElement);
             });
         }
 
-        // Select a log
-        function selectLog(log) {
-            state.selectedLog = log;
-            state.editMode = false;
-            updateUI();
-        }
-
         // Render log detail
         function renderLogDetail(log) {
-            const visibilityClass = log.type === 'public' ? 'public' : 'private';
-            const visibilityIcon = log.type === 'public' ? 'fa-eye' : 'fa-eye-slash';
-            const visibilityText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
+            const typeClass = log.type === 'public' ? 'public-log' : 'private-log';
+            const typeText = log.type === 'public' ? 'PUBLIC' : 'CLASSIFIED';
             
             let html = `
-                <div class="log-detail-header">
-                    <h2 class="log-detail-title">${log.title}</h2>
-                    <div class="log-detail-meta">
-                        <span class="log-detail-date">REF: ${log.date}</span>
-                        <span class="log-visibility ${visibilityClass}">
-                            <i class="fas ${visibilityIcon}"></i>
-                            <span>${visibilityText}</span>
-                        </span>
-                    </div>
+                <h2>${log.title}</h2>
+                <div class="log-meta">
+                    <span>REF: ${log.date}</span>
+                    <span class="${typeClass}">${typeText}</span>
                 </div>
-                <div class="log-content clearfix">
+                <div>
             `;
             
             // Add image if log has one
             if (log.hasImage && log.imageUrl) {
-                const sizeClass = `img-${log.imageSize || 'medium'}`;
-                const alignClass = `img-${log.imageAlign || 'center'}`;
-                
                 html += `
-                    <div class="log-image-container ${alignClass}">
-                        <img src="${log.imageUrl}" alt="${log.imageCaption}" class="log-image-content ${sizeClass}">
-                        <div class="image-placeholder-caption">${log.imageCaption}</div>
+                    <div>
+                        <img src="${log.imageUrl}" alt="${log.imageCaption}">
+                        <div class="caption">${log.imageCaption}</div>
                     </div>
                 `;
             }
             
             // Add log content
             html += `
-                    ${log.content}
+                    <div style="white-space: pre-line;">${log.content}</div>
                 </div>
             `;
 
             // Add edit/delete buttons if authenticated
             if (state.authenticated) {
                 html += `
-                    <div class="edit-actions" style="margin-top: 16px;">
-                        <button id="delete-log-btn" class="cancel-btn">
-                            <i class="fas fa-trash"></i>
-                            DELETE
-                        </button>
-                        <button id="edit-log-btn" class="edit-btn">
-                            <i class="fas fa-edit"></i>
-                            EDIT
-                        </button>
+                    <div style="margin-top: 20px;">
+                        <button id="delete-log-btn" class="delete">DELETE</button>
+                        <button id="edit-log-btn">EDIT</button>
                     </div>
                 `;
             }
             
             elements.logDetail.innerHTML = html;
 
-            // Add event listeners for edit/delete buttons
+            // Add event listeners
             if (state.authenticated) {
                 document.getElementById('edit-log-btn').addEventListener('click', () => {
-                    editLog(log);
+                    state.editMode = true;
+                    updateUI();
                 });
+                
                 document.getElementById('delete-log-btn').addEventListener('click', () => {
                     deleteLog(log);
                 });
             }
         }
 
-        // Toggle new log image options
-        function toggleNewLogImageOptions() {
-            const hasImage = document.getElementById('new-log-has-image').checked;
-            elements.newLogImageOptions.style.display = hasImage ? 'block' : 'none';
-            elements.newLogImagePreview.style.display = 'none';
+        // Toggle new log image section
+        function toggleNewImageSection() {
+            elements.newImageSection.style.display = 
+                document.getElementById('new-has-image').checked ? 'block' : 'none';
         }
 
-        // Toggle edit image options
-        function toggleEditImageOptions() {
-            const hasImage = document.getElementById('edit-has-image').checked;
-            elements.editImageOptions.style.display = hasImage ? 'block' : 'none';
-            
-            if (!hasImage) {
-                elements.editImagePreview.style.display = 'none';
-            }
-        }
-
-        // Preview new image
-        function previewNewImage() {
-            const imageUrl = document.getElementById('new-log-image-url').value;
-            const previewImg = document.getElementById('new-log-image-preview-img');
-            
-            if (imageUrl) {
-                previewImg.onload = function() {
-                    elements.newLogImagePreview.style.display = 'block';
-                };
-                
-                previewImg.onerror = function() {
-                    alert('Error loading image. Please check the URL and try again.');
-                    elements.newLogImagePreview.style.display = 'none';
-                };
-                
-                previewImg.src = imageUrl;
-            } else {
-                alert('Please enter an image URL.');
-            }
-        }
-
-        // Preview edit image
-        function previewEditImage() {
-            const imageUrl = document.getElementById('edit-image-url').value;
-            const previewImg = document.getElementById('edit-image-preview-img');
-            
-            if (imageUrl) {
-                previewImg.onload = function() {
-                    elements.editImagePreview.style.display = 'block';
-                };
-                
-                previewImg.onerror = function() {
-                    alert('Error loading image. Please check the URL and try again.');
-                    elements.editImagePreview.style.display = 'none';
-                };
-                
-                previewImg.src = imageUrl;
-            } else {
-                alert('Please enter an image URL.');
-            }
+        // Toggle edit image section
+        function toggleEditImageSection() {
+            elements.editImageSection.style.display = 
+                document.getElementById('edit-has-image').checked ? 'block' : 'none';
         }
 
         // Show new log form
         function showNewLogForm() {
+            document.getElementById('new-title').value = '';
+            document.getElementById('new-date').value = '';
+            document.getElementById('new-preview').value = '';
+            document.getElementById('new-type').value = 'public';
+            document.getElementById('new-content').value = '';
+            document.getElementById('new-has-image').checked = false;
+            document.getElementById('new-image-url').value = '';
+            document.getElementById('new-image-caption').value = '';
+            elements.newImageSection.style.display = 'none';
             elements.newLogForm.style.display = 'block';
-            document.getElementById('new-log-title').value = '';
-            document.getElementById('new-log-date').value = '';
-            document.getElementById('new-log-preview').value = '';
-            document.getElementById('new-log-type').value = 'public';
-            document.getElementById('new-log-content').value = '';
-            document.getElementById('new-log-has-image').checked = false;
-            document.getElementById('new-log-image-url').value = '';
-            document.getElementById('new-log-image-caption').value = '';
-            elements.newLogImageOptions.style.display = 'none';
-            elements.newLogImagePreview.style.display = 'none';
-            
-            // Reset image options
-            document.querySelectorAll('.image-size-options .size-option').forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.dataset.size === 'medium') {
-                    opt.classList.add('active');
-                }
-            });
-            
-            document.querySelectorAll('.image-alignment-options .align-option').forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.dataset.align === 'center') {
-                    opt.classList.add('active');
-                }
-            });
-            
-            state.newImageSize = 'medium';
-            state.newImageAlign = 'center';
         }
 
         // Hide new log form
@@ -517,14 +566,14 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
 
         // Save new log
         function saveNewLog() {
-            const title = document.getElementById('new-log-title').value;
-            const date = document.getElementById('new-log-date').value;
-            const preview = document.getElementById('new-log-preview').value;
-            const type = document.getElementById('new-log-type').value;
-            const content = document.getElementById('new-log-content').value;
-            const hasImage = document.getElementById('new-log-has-image').checked;
-            const imageUrl = document.getElementById('new-log-image-url').value;
-            const imageCaption = document.getElementById('new-log-image-caption').value;
+            const title = document.getElementById('new-title').value;
+            const date = document.getElementById('new-date').value;
+            const preview = document.getElementById('new-preview').value;
+            const type = document.getElementById('new-type').value;
+            const content = document.getElementById('new-content').value;
+            const hasImage = document.getElementById('new-has-image').checked;
+            const imageUrl = document.getElementById('new-image-url').value;
+            const imageCaption = document.getElementById('new-image-caption').value;
 
             // Simple validation
             if (!title || !date || !preview || !content) {
@@ -547,9 +596,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                 content,
                 hasImage,
                 imageUrl: hasImage ? imageUrl : '',
-                imageCaption: hasImage ? imageCaption : '',
-                imageSize: hasImage ? state.newImageSize : 'medium',
-                imageAlign: hasImage ? state.newImageAlign : 'center'
+                imageCaption: hasImage ? imageCaption : ''
             };
 
             // Add to appropriate array
@@ -568,12 +615,6 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             updateUI();
         }
 
-        // Edit log
-        function editLog(log) {
-            state.editMode = true;
-            updateUI();
-        }
-
         // Populate edit form
         function populateEditForm(log) {
             document.getElementById('edit-title').value = log.title;
@@ -584,36 +625,7 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             document.getElementById('edit-has-image').checked = log.hasImage;
             document.getElementById('edit-image-url').value = log.imageUrl || '';
             document.getElementById('edit-image-caption').value = log.imageCaption || '';
-            elements.editImageOptions.style.display = log.hasImage ? 'block' : 'none';
-            
-            // Set image options
-            state.editImageSize = log.imageSize || 'medium';
-            state.editImageAlign = log.imageAlign || 'center';
-            
-            // Update UI for image size
-            document.querySelectorAll('#edit-image-size-options .size-option').forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.dataset.size === state.editImageSize) {
-                    opt.classList.add('active');
-                }
-            });
-            
-            // Update UI for image alignment
-            document.querySelectorAll('#edit-image-alignment-options .align-option').forEach(opt => {
-                opt.classList.remove('active');
-                if (opt.dataset.align === state.editImageAlign) {
-                    opt.classList.add('active');
-                }
-            });
-            
-            // Show image preview if URL exists
-            if (log.hasImage && log.imageUrl) {
-                const previewImg = document.getElementById('edit-image-preview-img');
-                previewImg.src = log.imageUrl;
-                elements.editImagePreview.style.display = 'block';
-            } else {
-                elements.editImagePreview.style.display = 'none';
-            }
+            elements.editImageSection.style.display = log.hasImage ? 'block' : 'none';
         }
 
         // Cancel edit
@@ -657,8 +669,6 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             logToUpdate.hasImage = hasImage;
             logToUpdate.imageUrl = hasImage ? imageUrl : '';
             logToUpdate.imageCaption = hasImage ? imageCaption : '';
-            logToUpdate.imageSize = hasImage ? state.editImageSize : 'medium';
-            logToUpdate.imageAlign = hasImage ? state.editImageAlign : 'center';
 
             // If type changed, move the log to the appropriate array
             if (oldType !== type) {
@@ -717,30 +727,18 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'davos_logs_' + new Date().toISOString().split('T')[0] + '.json';
+            a.download = 'davos_logs_export.json';
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         }
 
-        // Show import modal
-        function showImportModal() {
-            elements.importModal.style.display = 'flex';
-        }
-
-        // Hide import modal
-        function hideImportModal() {
-            elements.importModal.style.display = 'none';
-        }
-
         // Import logs
-        function importLogs() {
-            const fileInput = document.getElementById('import-file');
-            const file = fileInput.files[0];
+        function importLogs(event) {
+            const file = event.target.files[0];
             
             if (!file) {
-                alert('Please select a file to import.');
                 return;
             }
             
@@ -771,7 +769,6 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                     
                     // Update UI
                     state.selectedLog = null;
-                    hideImportModal();
                     updateUI();
                     
                     alert('Logs imported successfully.');
@@ -780,944 +777,10 @@ imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1
                 }
             };
             reader.readAsText(file);
+            
+            // Reset the file input
+            event.target.value = '';
         }
-
-        // Initialize the application when the DOM is fully loaded
-        document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Davos Heavy Industries - Classified Mission Data Core</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <style>
-        /* Base styles and Cassette Futurism theme */
-        :root {
-            --background: #0a0a0a;
-            --terminal: #001100;
-            --accent1: #00ff41; /* Green terminal text */
-            --accent2: #ff0055; /* Magenta warning */
-            --accent3: #00ccff; /* Cyan highlights */
-            --darkAccent: #004400;
-            --gridLines: #004400;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Courier New', monospace;
-            background-color: var(--background);
-            color: var(--accent1);
-            line-height: 1.6;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* Grid background */
-        .grid-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(var(--gridLines) 1px, transparent 1px),
-                linear-gradient(90deg, var(--gridLines) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -1;
-            opacity: 0.5;
-        }
-        
-        /* Header */
-        header {
-            padding: 16px;
-            border-bottom: 1px solid var(--darkAccent);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .header-title {
-            display: flex;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1.5em;
-            letter-spacing: 1px;
-        }
-        
-        .header-title i {
-            margin-right: 10px;
-        }
-        
-        .security-indicator {
-            display: flex;
-            align-items: center;
-        }
-        
-        .security-indicator i {
-            margin-right: 10px;
-        }
-        
-        /* Main content container */
-        .container {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 320px;
-            border-right: 1px solid var(--darkAccent);
-            padding: 16px;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-        
-        .sidebar h2 {
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--darkAccent);
-        }
-        
-        /* Login form */
-        .login-form {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        
-        .login-form h3 {
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-        
-        .form-group {
-            margin-bottom: 12px;
-        }
-        
-        .form-group label {
-            display: block;
-            font-size: 0.8em;
-            margin-bottom: 4px;
-        }
-        
-        .form-group input {
-            width: 100%;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-        }
-        
-        .login-error {
-            color: var(--accent2);
-            font-size: 0.8em;
-            margin-bottom: 10px;
-        }
-        
-        button {
-            background-color: transparent;
-            border: 1px solid var(--accent1);
-            color: var(--accent1);
-            padding: 8px 12px;
-            cursor: pointer;
-            font-family: 'Courier New', monospace;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 8px;
-        }
-        
-        button i {
-            margin-right: 6px;
-        }
-        
-        button.logout-btn {
-            border-color: var(--accent2);
-            color: var(--accent2);
-        }
-
-        button.edit-btn {
-            border-color: var(--accent3);
-            color: var(--accent3);
-        }
-
-        button.cancel-btn {
-            border-color: var(--accent2);
-            color: var(--accent2);
-            margin-right: 8px;
-        }
-
-        button.save-btn {
-            border-color: var(--accent1);
-            color: var(--accent1);
-        }
-
-        button.preview-btn {
-            margin-top: 8px;
-            font-size: 0.8em;
-            padding: 4px 8px;
-        }
-
-        /* Admin tools */
-        .admin-tools {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .admin-tools h3 {
-            margin-bottom: 10px;
-            font-size: 0.9em;
-        }
-
-        /* Log entries */
-        .log-list {
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .log-entry {
-            padding: 10px;
-            margin-bottom: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        
-        .log-entry:hover {
-            background-color: rgba(0, 68, 0, 0.3);
-        }
-        
-        .log-entry.selected {
-            background-color: rgba(0, 68, 0, 0.5);
-        }
-        
-        .log-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-            font-size: 0.8em;
-        }
-        
-        .log-date {
-            opacity: 0.8;
-        }
-        
-        .log-visibility {
-            display: flex;
-            align-items: center;
-        }
-        
-        .log-visibility.public {
-            color: var(--accent3);
-        }
-        
-        .log-visibility.private {
-            color: var(--accent2);
-        }
-        
-        .log-visibility i {
-            margin-right: 4px;
-            font-size: 0.8em;
-        }
-        
-        .log-title {
-            font-size: 0.9em;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        .log-preview {
-            font-size: 0.8em;
-            opacity: 0.7;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* Main content area */
-        .main-content {
-            flex: 1;
-            padding: 24px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .content-container {
-            flex: 1;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--darkAccent);
-            border-radius: 4px;
-            padding: 24px;
-            margin-bottom: 16px;
-        }
-        
-        .log-detail-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            margin-bottom: 16px;
-            border-bottom: 1px solid var(--darkAccent);
-        }
-        
-        .log-detail-title {
-            font-size: 1.5em;
-            font-weight: bold;
-        }
-        
-        .log-detail-meta {
-            display: flex;
-            align-items: center;
-        }
-        
-        .log-detail-date {
-            margin-right: 16px;
-        }
-        
-        .log-content {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            white-space: pre-line;
-        }
-        
-        .log-image {
-            margin-top: 16px;
-            border: 1px solid var(--darkAccent);
-            padding: 8px;
-            border-radius: 4px;
-        }
-        
-        .image-placeholder {
-            height: 200px;
-            background-color: var(--background);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        
-        .image-placeholder-caption {
-            margin-top: 8px;
-            font-size: 0.8em;
-            text-align: center;
-        }
-
-        .log-image-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .log-image-content {
-            max-width: 100%;
-            max-height: 500px;
-        }
-        
-        .welcome-message {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-        
-        .welcome-icon {
-            font-size: 3em;
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        .welcome-title {
-            font-size: 1.5em;
-            margin-bottom: 8px;
-        }
-        
-        .welcome-text {
-            max-width: 500px;
-            opacity: 0.7;
-        }
-        
-        .security-warning {
-            margin-top: 24px;
-            padding: 16px;
-            border: 1px solid var(--accent2);
-            color: var(--accent2);
-            border-radius: 4px;
-        }
-
-        /* Edit form */
-        .edit-form {
-            display: none;
-        }
-
-        .edit-form .form-group {
-            margin-bottom: 16px;
-        }
-
-        .edit-form label {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .edit-form input[type="text"],
-        .edit-form input[type="url"],
-        .edit-form select,
-        .edit-form textarea {
-            width: 100%;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 8px;
-            font-family: 'Courier New', monospace;
-            border-radius: 4px;
-        }
-
-        .edit-form textarea {
-            height: 200px;
-            resize: vertical;
-        }
-
-        .edit-form .checkbox-group {
-            display: flex;
-            align-items: center;
-        }
-
-        .edit-form .checkbox-group input[type="checkbox"] {
-            margin-right: 8px;
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-        }
-
-        .edit-actions {
-            display: flex;
-            justify-content: flex-end;
-            margin-top: 16px;
-        }
-
-        /* New log form */
-        .new-log-form {
-            background-color: var(--terminal);
-            padding: 16px;
-            border-radius: 4px;
-            display: none;
-            margin-bottom: 16px;
-        }
-
-        /* Image preview */
-        .image-preview {
-            margin-top: 8px;
-            display: none;
-            border: 1px solid var(--darkAccent);
-            padding: 8px;
-            text-align: center;
-        }
-
-        .image-preview img {
-            max-width: 100%;
-            max-height: 200px;
-        }
-
-        /* Image options */
-        .image-options {
-            margin-top: 8px;
-            display: none;
-        }
-
-        .image-size-options {
-            display: flex;
-            margin-top: 8px;
-            gap: 8px;
-        }
-
-        .size-option {
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 0.8em;
-        }
-
-        .size-option.active {
-            background-color: var(--darkAccent);
-        }
-
-        .image-alignment-options {
-            display: flex;
-            margin-top: 8px;
-            gap: 8px;
-        }
-
-        .align-option {
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            color: var(--accent1);
-            padding: 4px 8px;
-            cursor: pointer;
-            font-size: 0.8em;
-            display: flex;
-            align-items: center;
-        }
-
-        .align-option.active {
-            background-color: var(--darkAccent);
-        }
-
-        .align-option i {
-            margin-right: 4px;
-        }
-        
-        /* Footer */
-        .footer {
-            padding: 8px 16px;
-            font-size: 0.8em;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .system-status {
-            display: flex;
-            align-items: center;
-        }
-        
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: var(--accent1);
-            margin-right: 8px;
-            animation: pulse 2s infinite;
-        }
-        
-        .user-status {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-status i {
-            margin-right: 6px;
-        }
-        
-        /* Animations */
-        @keyframes pulse {
-            0% { opacity: 0.6; }
-            50% { opacity: 1; }
-            100% { opacity: 0.6; }
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background-color: var(--background);
-            border: 1px solid var(--darkAccent);
-            border-radius: 4px;
-            padding: 24px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--darkAccent);
-        }
-
-        .modal-title {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: var(--accent2);
-            font-size: 1.5em;
-            cursor: pointer;
-            padding: 0;
-            margin: 0;
-        }
-
-        /* Image alignment classes */
-        .img-left {
-            float: left;
-            margin-right: 16px;
-            margin-bottom: 8px;
-        }
-
-        .img-center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            margin-bottom: 8px;
-        }
-
-        .img-right {
-            float: right;
-            margin-left: 16px;
-            margin-bottom: 8px;
-        }
-
-        /* Image size classes */
-        .img-small {
-            max-width: 200px;
-            max-height: 200px;
-        }
-
-        .img-medium {
-            max-width: 300px;
-            max-height: 300px;
-        }
-
-        .img-large {
-            max-width: 400px;
-            max-height: 400px;
-        }
-
-        .img-full {
-            max-width: 100%;
-        }
-
-        /* Clear fix for floating images */
-        .clearfix::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-    </style>
-</head>
-<body>
-    <!-- Grid background -->
-    <div class="grid-background"></div>
-
-    <!-- Header -->
-    <header>
-        <div class="header-title">
-            <i class="fas fa-desktop"></i>
-            <span>DAVOS HEAVY INDUSTRIES</span>
-        </div>
-        <div class="security-indicator">
-            <i class="fas fa-shield-alt"></i>
-            <span id="security-level">SECURITY LEVEL: PUBLIC</span>
-            <button id="logout-btn" class="logout-btn" style="display: none; margin-left: 16px;">
-                <i class="fas fa-lock"></i>
-                LOGOUT
-            </button>
-        </div>
-    </header>
-
-    <!-- Main container -->
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <h2>MISSION LOGS</h2>
-            
-            <!-- Login form (visible when not authenticated) -->
-            <div id="login-form" class="login-form">
-                <h3>SECURE LOGIN</h3>
-                <div class="form-group">
-                    <label for="username">USER ID</label>
-                    <input type="text" id="username" placeholder="Enter user ID">
-                </div>
-                <div class="form-group">
-                    <label for="password">PASSKEY</label>
-                    <input type="password" id="password" placeholder="Enter passkey">
-                </div>
-                <div id="login-error" class="login-error" style="display: none;"></div>
-                <button id="login-btn">
-                    <i class="fas fa-lock"></i>
-                    ACCESS
-                </button>
-            </div>
-            
-            <!-- Admin tools (visible when authenticated) -->
-            <div id="admin-tools" class="admin-tools">
-                <h3>ADMIN CONTROLS</h3>
-                <button id="new-log-btn">
-                    <i class="fas fa-plus"></i>
-                    NEW MISSION LOG
-                </button>
-                <button id="export-logs-btn">
-                    <i class="fas fa-download"></i>
-                    EXPORT ALL LOGS
-                </button>
-                <button id="import-logs-btn">
-                    <i class="fas fa-upload"></i>
-                    IMPORT LOGS
-                </button>
-            </div>
-
-            <!-- New log form -->
-            <div id="new-log-form" class="new-log-form">
-                <h3>CREATE NEW LOG</h3>
-                <div class="form-group">
-                    <label for="new-log-title">TITLE</label>
-                    <input type="text" id="new-log-title" placeholder="Enter log title">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-date">DATE</label>
-                    <input type="text" id="new-log-date" placeholder="YYYY.MM.DD">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-preview">PREVIEW</label>
-                    <input type="text" id="new-log-preview" placeholder="Brief description">
-                </div>
-                <div class="form-group">
-                    <label for="new-log-type">TYPE</label>
-                    <select id="new-log-type">
-                        <option value="public">PUBLIC</option>
-                        <option value="private">CLASSIFIED</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="new-log-content">CONTENT</label>
-                    <textarea id="new-log-content" placeholder="Enter log content"></textarea>
-                </div>
-                <div class="form-group checkbox-group">
-                    <input type="checkbox" id="new-log-has-image">
-                    <label for="new-log-has-image">INCLUDE IMAGE</label>
-                </div>
-                <div id="new-log-image-options" style="display: none;">
-                    <div class="form-group">
-                        <label for="new-log-image-url">IMAGE URL</label>
-                        <input type="url" id="new-log-image-url" placeholder="https://example.com/image.jpg">
-                        <button id="new-log-preview-image" class="preview-btn">
-                            <i class="fas fa-eye"></i>
-                            PREVIEW IMAGE
-                        </button>
-                        <div id="new-log-image-preview" class="image-preview">
-                            <img id="new-log-image-preview-img">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="new-log-image-caption">IMAGE CAPTION</label>
-                        <input type="text" id="new-log-image-caption" placeholder="Enter image caption">
-                    </div>
-                    <div class="form-group">
-                        <label>IMAGE SIZE</label>
-                        <div class="image-size-options">
-                            <div class="size-option" data-size="small">SMALL</div>
-                            <div class="size-option active" data-size="medium">MEDIUM</div>
-                            <div class="size-option" data-size="large">LARGE</div>
-                            <div class="size-option" data-size="full">FULL WIDTH</div>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>IMAGE ALIGNMENT</label>
-                        <div class="image-alignment-options">
-                            <div class="align-option" data-align="left">
-                                <i class="fas fa-align-left"></i> LEFT
-                            </div>
-                            <div class="align-option active" data-align="center">
-                                <i class="fas fa-align-center"></i> CENTER
-                            </div>
-                            <div class="align-option" data-align="right">
-                                <i class="fas fa-align-right"></i> RIGHT
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="edit-actions">
-                    <button id="cancel-new-log-btn" class="cancel-btn">
-                        <i class="fas fa-times"></i>
-                        CANCEL
-                    </button>
-                    <button id="save-new-log-btn" class="save-btn">
-                        <i class="fas fa-save"></i>
-                        SAVE
-                    </button>
-                </div>
-            </div>
-            
-            <!-- Log entries list -->
-            <div id="log-list" class="log-list">
-                <!-- Logs will be populated by JavaScript -->
-            </div>
-        </div>
-        
-        <!-- Main content area -->
-        <div class="main-content">
-            <div class="content-container">
-                <!-- View log detail -->
-                <div id="log-detail" style="display: none;">
-                    <!-- Log details will be populated by JavaScript -->
-                </div>
-
-                <!-- Edit log form -->
-                <div id="edit-form" class="edit-form">
-                    <div class="form-group">
-                        <label for="edit-title">TITLE</label>
-                        <input type="text" id="edit-title">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-date">DATE</label>
-                        <input type="text" id="edit-date">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-preview">PREVIEW</label>
-                        <input type="text" id="edit-preview">
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-type">TYPE</label>
-                        <select id="edit-type">
-                            <option value="public">PUBLIC</option>
-                            <option value="private">CLASSIFIED</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="edit-content">CONTENT</label>
-                        <textarea id="edit-content"></textarea>
-                    </div>
-                    <div class="form-group checkbox-group">
-                        <input type="checkbox" id="edit-has-image">
-                        <label for="edit-has-image">INCLUDE IMAGE</label>
-                    </div>
-                    <div id="edit-image-options" style="display: none;">
-                        <div class="form-group">
-                            <label for="edit-image-url">IMAGE URL</label>
-                            <input type="url" id="edit-image-url" placeholder="https://example.com/image.jpg">
-                            <button id="edit-preview-image" class="preview-btn">
-                                <i class="fas fa-eye"></i>
-                                PREVIEW IMAGE
-                            </button>
-                            <div id="edit-image-preview" class="image-preview">
-                                <img id="edit-image-preview-img">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="edit-image-caption">IMAGE CAPTION</label>
-                            <input type="text" id="edit-image-caption">
-                        </div>
-                        <div class="form-group">
-                            <label>IMAGE SIZE</label>
-                            <div class="image-size-options" id="edit-image-size-options">
-                                <div class="size-option" data-size="small">SMALL</div>
-                                <div class="size-option active" data-size="medium">MEDIUM</div>
-                                <div class="size-option" data-size="large">LARGE</div>
-                                <div class="size-option" data-size="full">FULL WIDTH</div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label>IMAGE ALIGNMENT</label>
-                            <div class="image-alignment-options" id="edit-image-alignment-options">
-                                <div class="align-option" data-align="left">
-                                    <i class="fas fa-align-left"></i> LEFT
-                                </div>
-                                <div class="align-option active" data-align="center">
-                                    <i class="fas fa-align-center"></i> CENTER
-                                </div>
-                                <div class="align-option" data-align="right">
-                                    <i class="fas fa-align-right"></i> RIGHT
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="edit-actions">
-                        <button id="cancel-edit-btn" class="cancel-btn">
-                            <i class="fas fa-times"></i>
-                            CANCEL
-                        </button>
-                        <button id="save-edit-btn" class="save-btn">
-                            <i class="fas fa-save"></i>
-                            SAVE
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Default welcome message -->
-                <div id="welcome-message" class="welcome-message">
-                    <div class="welcome-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <h3 class="welcome-title">MISSION DATA CORE</h3>
-                    <p class="welcome-text">Select a mission log from the sidebar to view detailed information.</p>
-                    <div id="security-warning" class="security-warning">
-                        <p>WARNING: Some mission logs require security clearance.</p>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Footer with status -->
-            <div class="footer">
-                <div class="system-status">
-                    <div class="status-indicator"></div>
-                    <span>SYSTEM OPERATIONAL</span>
-                </div>
-                <div id="user-status" class="user-status">
-                    <span>PUBLIC ACCESS MODE</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Import modal -->
-    <div id="import-modal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">IMPORT LOGS</h3>
-                <button class="close-modal" id="close-import-modal">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="import-file">SELECT JSON FILE</label>
-                <input type="file" id="import-file" accept=".json">
-            </div>
-            <div class="form-group">
-                <button id="import-confirm-btn" class="save-btn">
-                    <i class="fas fa-upload"></i>
-                    IMPORT
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // Log data (this would normally be stored in a separate JSON file)
-        const initialLogs = {
-            public: [
-                {
-                    id: 1,
-                    title: 'MISSION REPORT: Derelict Vessel "Chronos"',
-                    date: '2385.03.15',
-                    preview: 'Team encountered unknown biological entities in cargo hold B. Three casualties reported.',
-                    type: 'public',
-                    content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
-                    hasImage: true,
-                    imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80
+</html>

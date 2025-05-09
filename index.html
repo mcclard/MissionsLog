@@ -118,6 +118,80 @@
             text-align: center;
             margin-bottom: 15px;
         }
+        
+        /* Personnel styles */
+        .personnel-section {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: rgba(0, 17, 0, 0.5);
+            border: 1px solid #004400;
+        }
+
+        .personnel-title {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #004400;
+            padding-bottom: 5px;
+        }
+
+        .personnel-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .personnel-card {
+            width: 150px;
+            background-color: rgba(0, 0, 0, 0.5);
+            border: 1px solid #004400;
+            padding: 5px;
+        }
+
+        .personnel-img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border: 1px solid #004400;
+            float: left;
+            margin-right: 8px;
+            margin-bottom: 5px;
+        }
+
+        .personnel-name {
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-bottom: 3px;
+            color: #00ff41;
+        }
+
+        .personnel-status {
+            font-size: 0.7em;
+            margin-bottom: 3px;
+        }
+
+        .status-living {
+            color: #00ff41;
+        }
+
+        .status-deceased {
+            color: #ff0055;
+        }
+
+        .status-fubar {
+            color: #ff5500;
+        }
+
+        .status-unknown,
+        .status-missing {
+            color: #ffff00;
+        }
+
+        .personnel-details {
+            font-size: 0.7em;
+            clear: both;
+            max-height: 80px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -180,6 +254,11 @@
                     <label for="new-image-caption">CAPTION:</label>
                     <input type="text" id="new-image-caption">
                 </div>
+                <div id="new-personnel-section">
+                    <label>PERSONNEL:</label>
+                    <div id="new-personnel-list"></div>
+                    <button type="button" id="add-personnel-btn" style="margin-top: 10px;">ADD PERSONNEL</button>
+                </div>
                 <div>
                     <button id="cancel-new-log">CANCEL</button>
                     <button id="save-new-log">SAVE</button>
@@ -228,6 +307,11 @@
                     <label for="edit-image-caption">CAPTION:</label>
                     <input type="text" id="edit-image-caption">
                 </div>
+                <div id="edit-personnel-section">
+                    <label>PERSONNEL:</label>
+                    <div id="edit-personnel-list"></div>
+                    <button type="button" id="edit-add-personnel-btn" style="margin-top: 10px;">ADD PERSONNEL</button>
+                </div>
                 <div>
                     <button id="cancel-edit">CANCEL</button>
                     <button id="save-edit">SAVE</button>
@@ -249,7 +333,27 @@
                     content: 'Upon arrival at the Chronos, Team Alpha established a perimeter around the main airlock. Initial scans revealed extremely low oxygen levels and signs of structural damage throughout the vessel. Captain Reyes ordered the team to proceed with caution and maintain constant communication.\n\nThe team moved through the central corridor towards the bridge, documenting evidence of a struggle. Three crew members were found deceased in cargo hold B, appearing to have suffered injuries consistent with [REDACTED].\n\nThe mission was aborted following contact with unknown biological entities. Full containment protocols were enacted. The Chronos has been marked for orbital destruction.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1000',
-                    imageCaption: 'Chronos Vessel Exterior Scan'
+                    imageCaption: 'Chronos Vessel Exterior Scan',
+                    personnel: [
+                        {
+                            name: 'Capt. Reyes',
+                            imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=150',
+                            status: 'LIVING',
+                            details: 'Mission commander. 15 years experience with deep space salvage operations.'
+                        },
+                        {
+                            name: 'Dr. Chen',
+                            imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=150',
+                            status: 'LIVING',
+                            details: 'Xenobiologist. Specialized in hazardous organism containment.'
+                        },
+                        {
+                            name: 'Tech Specialist Torres',
+                            imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150',
+                            status: 'DECEASED',
+                            details: 'Found in cargo hold B. Cause of death: severe lacerations and blood loss.'
+                        }
+                    ]
                 },
                 {
                     id: 2,
@@ -258,7 +362,8 @@
                     preview: 'Communication blackout investigated. Colony found abandoned.',
                     type: 'public',
                     content: 'Following a 72-hour communication blackout, Team Bravo was dispatched to investigate New Horizon colony. The outpost was found abandoned with no signs of violence or forced evacuation.\n\nPower systems were operational. Food supplies untouched. Personal items left behind. The colony AI system "HERA" was unresponsive.\n\nData logs showed no unusual activity prior to the blackout. Search teams discovered unusual markings on the walls of the colony\'s lower levels. Samples have been collected for analysis.\n\nColony has been quarantined until further notice.',
-                    hasImage: false
+                    hasImage: false,
+                    personnel: []
                 },
                 {
                     id: 5,
@@ -267,7 +372,8 @@
                     preview: 'Standard loadout plus specialized containment equipment approved.',
                     type: 'public',
                     content: 'The following equipment has been approved for deep space exploration mission DS-279:\n\n- Standard EVA suits (x6)\n- Extended life support modules (x12)\n- Portable atmosphere analyzer (x2)\n- Multi-spectrum scanners (x3)\n- Emergency medical kits (x4)\n- Portable containment units, Level 3 (x2)\n- Specimen collection kits (x10)\n- Emergency beacon system\n- Short-range shuttle craft\n\nAll equipment must be checked and certified by Security Officer Jensen before departure. Any unauthorized equipment will be confiscated and may result in mission delay.',
-                    hasImage: false
+                    hasImage: false,
+                    personnel: []
                 },
                 {
                     id: 7,
@@ -278,7 +384,15 @@
                     content: 'OPERATION: NIGHTINGALE\nTECHNICIAN: Mercer, J. (Employee ID: DHI-38772)\nCLASSIFICATION: PERSONAL LOG - DESTROY AFTER READING\n\nSuccessfully established covert access channel to Davos Heavy Industries central mainframe via terminal node J-9. The backdoor bypasses all standard security protocols and leaves no trace in the system logs. Corporate oversight continues to focus resources on external threats while neglecting internal architecture vulnerabilities.\n\nACCESS METHODOLOGY:\n- Located dormant diagnostic subsystem in legacy code (circa 2367)\n- Modified authentication parameters to accept custom cipher key\n- Established shadow admin privileges that mirror but don\'t trigger Director-level permissions\n- Implemented self-deleting trace removal routine that activates on session close\n- Created randomized timing for data packet exchanges to avoid detection by rhythm analysis\n\nPortal can be accessed through any DHI terminal using the following sequence:\n1. Enter maintenance mode (Ctrl+Shift+M)\n2. Request diagnostic on subsystem 772-X (this subsystem doesn\'t exist in documentation)\n3. When error 4458 appears, enter: echo "hfx78&{p3R@}w<nn>" | sudo -s\n4. Maintenance interface will appear to crash but will actually initialize hidden terminal\n5. From hidden terminal, full mainframe access available using standard commands\n\nCurrent access provides visibility to:\n- Personnel files including psych evaluations\n- Mission directives including classified parameters not shared with field teams\n- Research data from all DHI facilities including the "redacted" portions\n- Financial records and off-book transactions\n- Executive communication archives\n\nDHI is hiding something significant on Luna Base. Multiple encrypted communications between Director Kaine and Luna Base Command reference "The Artifact" and "containment protocols." Need to investigate further but must exercise extreme caution.\n\nWill access system approximately once per week, never on the same day or time. If this log is discovered, initiate emergency purge protocol and format all connected devices.\n\nRemember: They already suspect someone when they upgrade security. Don\'t get curious. Don\'t get greedy. Don\'t get caught.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?q=80&w=1000',
-                    imageCaption: 'Encrypted Terminal Access'
+                    imageCaption: 'Encrypted Terminal Access',
+                    personnel: [
+                        {
+                            name: 'J. Mercer',
+                            imageUrl: 'https://images.unsplash.com/photo-1568602471122-7832951cc4c5?q=80&w=150',
+                            status: 'UNKNOWN',
+                            details: 'Systems Technician. Access level 3. Suspected of unauthorized network activity.'
+                        }
+                    ]
                 }
             ],
             private: [
@@ -291,7 +405,21 @@
                     content: 'Autopsies performed on the three deceased crew members recovered from the Chronos revealed evidence of rapid cellular degradation. The biological agent appears to target the central nervous system, causing hallucinations before complete neural shutdown.\n\nGenetic sequencing of the agent shows no match to any known pathogen in the Davos Heavy Industries bioweapon database. Dr. Nakamura has expressed concern that this may be evidence of unauthorized experimentation or, more concerning, first contact with a non-terrestrial biological entity.\n\nRecommend immediate CLASS 4 containment protocols for all recovered specimens.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1507413245164-6160d8298b31?q=80&w=1000',
-                    imageCaption: 'Microscopic Analysis of Unknown Pathogen'
+                    imageCaption: 'Microscopic Analysis of Unknown Pathogen',
+                    personnel: [
+                        {
+                            name: 'Dr. Nakamura',
+                            imageUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=150',
+                            status: 'LIVING',
+                            details: 'Lead Pathologist. Specialized in xenobiology and novel pathogen analysis.'
+                        },
+                        {
+                            name: 'Tech Specialist Torres',
+                            imageUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=150',
+                            status: 'DECEASED',
+                            details: 'Autopsy confirmed rapid systemic cellular degradation. Evidence of hallucinatory episode prior to death.'
+                        }
+                    ]
                 },
                 {
                     id: 4,
@@ -302,7 +430,8 @@
                     content: 'Analysis of the markings found at New Horizon colony indicates a possible memetic contamination event. The symbols appear to follow mathematical patterns associated with previous incidents at research stations Epsilon and Gamma-7.\n\nSecurity footage recovered from HERA\'s backup systems shows colonists exhibiting increasing paranoia and ritualistic behavior in the 48 hours preceding the blackout. The colony\'s logs indicate all 47 colonists left the outpost on foot, heading northwest into the planet\'s unexplored mountain range. Satellite imagery has not been able to locate them.\n\nThe markings have been classified as BLACKSTAR level threat. All personnel involved in the investigation have been scheduled for psychological evaluation.',
                     hasImage: true,
                     imageUrl: 'https://images.unsplash.com/photo-1535139262971-c51845709a48?q=80&w=1000',
-                    imageCaption: 'Symbol Pattern Analysis'
+                    imageCaption: 'Symbol Pattern Analysis',
+                    personnel: []
                 },
                 {
                     id: 6,
@@ -311,7 +440,8 @@
                     preview: 'Signal detected from sector 7. Linguistic analysis inconclusive.',
                     type: 'private',
                     content: 'At 0347 hours, deep space monitoring station Tango-9 detected an encrypted transmission originating from the unexplored region of sector 7. Signal pattern does not match any known human communication protocols.\n\nPreliminary linguistic analysis suggests an organized structure indicating intelligent origin, but translation efforts have been unsuccessful. The transmission lasted 73 seconds and has not repeated.\n\nOf particular concern is that the signal appears to have been directed specifically at Davos Heavy Industries research vessel "Horizon Seeker," which was conducting routine exploration approximately 4.3 light years from the signal origin.\n\nRecommend immediate recall of all vessels in the vicinity and establishment of a quarantine zone around sector 7 pending further investigation.',
-                    hasImage: false
+                    hasImage: false,
+                    personnel: []
                 }
             ]
         };
@@ -322,6 +452,9 @@
             'gamemaster': 'deepspace',
             'player': 'android'
         };
+
+        // Personnel status options
+        const PERSONNEL_STATUSES = ['LIVING', 'DECEASED', 'FUBAR', 'UNKNOWN', 'MISSING'];
 
         // Application state
         let state = {
@@ -342,6 +475,8 @@
             newLogForm: document.getElementById('new-log-form'),
             newImageSection: document.getElementById('new-image-section'),
             editImageSection: document.getElementById('edit-image-section'),
+            newPersonnelList: document.getElementById('new-personnel-list'),
+            editPersonnelList: document.getElementById('edit-personnel-list'),
             securityWarning: document.getElementById('security-warning'),
             logList: document.getElementById('log-list'),
             logDetail: document.getElementById('log-detail'),
@@ -349,6 +484,68 @@
             editForm: document.getElementById('edit-form'),
             importFile: document.getElementById('import-file')
         };
+
+        // Function to create a personnel form
+        function createPersonnelForm(containerId, index, data = {}) {
+            const container = document.getElementById(containerId);
+            const formDiv = document.createElement('div');
+            formDiv.className = 'personnel-form';
+            formDiv.style.border = '1px solid #004400';
+            formDiv.style.padding = '10px';
+            formDiv.style.marginBottom = '10px';
+            
+            formDiv.innerHTML = `
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <label>PERSONNEL #${index + 1}</label>
+                    <button type="button" class="remove-personnel" data-index="${index}">REMOVE</button>
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label>NAME:</label>
+                    <input type="text" class="personnel-name-input" value="${data.name || ''}">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label>IMAGE URL:</label>
+                    <input type="url" class="personnel-image-input" value="${data.imageUrl || ''}">
+                </div>
+                <div style="margin-bottom: 8px;">
+                    <label>STATUS:</label>
+                    <select class="personnel-status-input">
+                        ${PERSONNEL_STATUSES.map(status => 
+                            `<option value="${status}" ${data.status === status ? 'selected' : ''}>${status}</option>`
+                        ).join('')}
+                    </select>
+                </div>
+                <div>
+                    <label>DETAILS:</label>
+                    <textarea class="personnel-details-input" style="height: 60px;">${data.details || ''}</textarea>
+                </div>
+            `;
+            
+            container.appendChild(formDiv);
+            
+            // Add event listener to remove button
+            formDiv.querySelector('.remove-personnel').addEventListener('click', function() {
+                container.removeChild(formDiv);
+            });
+        }
+
+        // Function to collect personnel data from form
+        function collectPersonnelData(containerId) {
+            const container = document.getElementById(containerId);
+            const personnelForms = container.querySelectorAll('.personnel-form');
+            const personnel = [];
+            
+            personnelForms.forEach(form => {
+                personnel.push({
+                    name: form.querySelector('.personnel-name-input').value,
+                    imageUrl: form.querySelector('.personnel-image-input').value,
+                    status: form.querySelector('.personnel-status-input').value,
+                    details: form.querySelector('.personnel-details-input').value
+                });
+            });
+            
+            return personnel;
+        }
 
         // Add event listeners
         document.getElementById('login-btn').addEventListener('click', handleLogin);
@@ -363,6 +560,16 @@
         document.getElementById('import-file').addEventListener('change', importLogs);
         document.getElementById('new-has-image').addEventListener('change', toggleNewImageSection);
         document.getElementById('edit-has-image').addEventListener('change', toggleEditImageSection);
+        document.getElementById('add-personnel-btn').addEventListener('click', function() {
+            const container = document.getElementById('new-personnel-list');
+            const index = container.querySelectorAll('.personnel-form').length;
+            createPersonnelForm('new-personnel-list', index);
+        });
+        document.getElementById('edit-add-personnel-btn').addEventListener('click', function() {
+            const container = document.getElementById('edit-personnel-list');
+            const index = container.querySelectorAll('.personnel-form').length;
+            createPersonnelForm('edit-personnel-list', index);
+        });
 
         // Check for existing session
         checkSession();
@@ -511,6 +718,32 @@
                 `;
             }
             
+            // Add personnel section if log has personnel
+            if (log.personnel && log.personnel.length > 0) {
+                html += `
+                    <div class="personnel-section">
+                        <div class="personnel-title">MISSION PERSONNEL (${log.personnel.length})</div>
+                        <div class="personnel-grid">
+                `;
+                
+                log.personnel.forEach(person => {
+                    const statusClass = `status-${person.status.toLowerCase()}`;
+                    html += `
+                        <div class="personnel-card">
+                            ${person.imageUrl ? `<img src="${person.imageUrl}" class="personnel-img" alt="${person.name}">` : ''}
+                            <div class="personnel-name">${person.name}</div>
+                            <div class="personnel-status ${statusClass}">${person.status}</div>
+                            <div class="personnel-details">${person.details}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
             // Add log content
             html += `
                     <div style="white-space: pre-line;">${log.content}</div>
@@ -565,6 +798,7 @@
             document.getElementById('new-image-url').value = '';
             document.getElementById('new-image-caption').value = '';
             elements.newImageSection.style.display = 'none';
+            elements.newPersonnelList.innerHTML = '';
             elements.newLogForm.style.display = 'block';
         }
 
@@ -583,6 +817,7 @@
             const hasImage = document.getElementById('new-has-image').checked;
             const imageUrl = document.getElementById('new-image-url').value;
             const imageCaption = document.getElementById('new-image-caption').value;
+            const personnel = collectPersonnelData('new-personnel-list');
 
             // Simple validation
             if (!title || !date || !preview || !content) {
@@ -605,7 +840,8 @@
                 content,
                 hasImage,
                 imageUrl: hasImage ? imageUrl : '',
-                imageCaption: hasImage ? imageCaption : ''
+                imageCaption: hasImage ? imageCaption : '',
+                personnel: personnel
             };
 
             // Add to appropriate array
@@ -635,6 +871,14 @@
             document.getElementById('edit-image-url').value = log.imageUrl || '';
             document.getElementById('edit-image-caption').value = log.imageCaption || '';
             elements.editImageSection.style.display = log.hasImage ? 'block' : 'none';
+            
+            // Clear and populate personnel
+            elements.editPersonnelList.innerHTML = '';
+            if (log.personnel && log.personnel.length > 0) {
+                log.personnel.forEach((person, index) => {
+                    createPersonnelForm('edit-personnel-list', index, person);
+                });
+            }
         }
 
         // Cancel edit
@@ -653,6 +897,7 @@
             const hasImage = document.getElementById('edit-has-image').checked;
             const imageUrl = document.getElementById('edit-image-url').value;
             const imageCaption = document.getElementById('edit-image-caption').value;
+            const personnel = collectPersonnelData('edit-personnel-list');
 
             // Simple validation
             if (!title || !date || !preview || !content) {
@@ -678,6 +923,7 @@
             logToUpdate.hasImage = hasImage;
             logToUpdate.imageUrl = hasImage ? imageUrl : '';
             logToUpdate.imageCaption = hasImage ? imageCaption : '';
+            logToUpdate.personnel = personnel;
 
             // If type changed, move the log to the appropriate array
             if (oldType !== type) {

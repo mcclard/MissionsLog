@@ -364,17 +364,53 @@
     <div class="container">
         <!-- Sidebar -->
         <div class="sidebar">
-            <div id="login-section">
-                <div id="login-form" class="login-form">
-                    <h3>SECURE LOGIN</h3>
-                    <label for="username">USER ID:</label>
-                    <input type="text" id="username">
-                    <label for="password">PASSKEY:</label>
-                    <input type="password" id="password">
-                    <div id="login-error" style="color: #ff0055; display: none;"></div>
-                    <button id="login-btn">ACCESS</button>
-                </div>
-            </div>
+      <div id="login-form" class="login-form">
+    <h3>SECURE LOGIN</h3>
+    <div>
+        <label for="username">USER ID:</label>
+        <input type="text" id="username">
+    </div>
+    <div>
+        <label for="password">PASSKEY:</label>
+        <input type="password" id="password">
+    </div>
+    <div id="login-error" style="color: #ff0055; display: none;"></div>
+    <button type="button" id="login-btn" onclick="manualLogin()">ACCESS</button>
+</div>
+
+<script>
+// Add this direct login function
+function manualLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    const validUsers = {
+        'admin': 'mothership',
+        'gamemaster': 'deepspace',
+        'player': 'android'
+    };
+    
+    if (validUsers[username] && validUsers[username] === password) {
+        // Login successful
+        localStorage.setItem('davosSession', JSON.stringify({
+            username: username,
+            timestamp: new Date().getTime()
+        }));
+        
+        // Update UI immediately
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('admin-tools').style.display = 'block';
+        document.getElementById('security-warning').style.display = 'none';
+        
+        // Reload page to ensure all scripts reinitialize properly
+        window.location.reload();
+    } else {
+        // Login failed
+        document.getElementById('login-error').textContent = 'ACCESS DENIED: Invalid credentials';
+        document.getElementById('login-error').style.display = 'block';
+    }
+}
+</script>
             
             <div id="admin-tools" class="admin-tools" style="display: none;">
                 <h3>ADMIN CONTROLS</h3>
